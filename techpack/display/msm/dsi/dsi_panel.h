@@ -199,57 +199,12 @@ struct drm_panel_esd_config {
 	u32 groups;
 };
 
-#ifdef OPLUS_BUG_STABILITY
-struct dsi_panel_oplus_privite {
-	const char *vendor_name;
-	const char *manufacture_name;
-	bool skip_mipi_last_cmd;
-	struct oplus_brightness_alpha *bl_remap;
-	int bl_remap_count;
-	bool is_pxlw_iris5;
-	bool bl_interpolate_nosub;
-	bool bl_interpolate_remap_nosub;
-	bool bl_interpolate_alpha_dc_nosub;
-	bool is_oplus_project;
-	bool is_raw_backlight;
-	bool dfps_idle_off;
-	bool aod_on_fod_off;
-	bool esd_err_flag_enabled;
-#ifdef OPLUS_FEATURE_AOD_RAMLESS
-	bool is_aod_ramless;
-#endif /* OPLUS_FEATURE_AOD_RAMLESS */
-#ifdef CONFIG_REGULATOR_TPS65132
-	bool is_tps65132_support;
-#endif /* CONFIG_REGULATOR_TPS65132 */
-	bool is_osc_support;
-	u32 osc_clk_mode0_rate;
-	u32 osc_clk_mode1_rate;
-	u32 osc_clk_rate_lastest;
-	bool is_osc_rewrite_support;
-	u32 osc_rewrite_clk_rate;
-	bool is_90fps_switch;
-	bool is_dc_seed_support;
-	bool gamma_switch_enable;
-	bool lcd_cabc_support;
-	bool low_light_adjust_gamma_support;
-	bool low_light_gamma_is_adjusted;
-	u32 low_light_adjust_gamma_level;
-	bool oplus_fp_hbm_config_flag;
-/********************************************
-	fp_type usage:
-	bit(0):lcd capacitive fingerprint(aod/fod are not supported)
-	bit(1):oled capacitive fingerprint(only support aod)
-	bit(2):optical fingerprint old solution(dim layer and pressed icon are controlled by kernel)
-	bit(3):optical fingerprint new solution(dim layer and pressed icon are not controlled by kernel)
-	bit(4):local hbm
-	bit(5):pressed icon brightness adaptive
-	bit(6):ultrasonic fingerprint
-	bit(7):ultra low power aod
-********************************************/
-	u32 fp_type;
-	u32 aod_low_brightness_threshold;
+enum dsi_panel_display_mode {
+	DISPLAY_MODE_DEFAULT,
+	DISPLAY_MODE_SRGB,
+	DISPLAY_MODE_DCI_P3,
+	DISPLAY_MODE_WIDE_COLOR,
 };
-#endif /* OPLUS_BUG_STABILITY */
 
 struct dsi_panel {
 	const char *name;
@@ -284,6 +239,7 @@ struct dsi_panel {
 	struct drm_panel_esd_config esd_config;
 
 	int hbm_mode;
+	enum dsi_panel_display_mode display_mode;
 
 	struct dsi_parser_utils utils;
 
@@ -420,6 +376,8 @@ int dsi_panel_unprepare(struct dsi_panel *panel);
 int dsi_panel_post_unprepare(struct dsi_panel *panel);
 
 int dsi_panel_apply_hbm_mode(struct dsi_panel *panel);
+
+int dsi_panel_apply_display_mode(struct dsi_panel *panel);
 
 int dsi_panel_set_backlight(struct dsi_panel *panel, u32 bl_lvl);
 
