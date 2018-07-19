@@ -2524,98 +2524,12 @@ const char *cmd_set_prop_map[DSI_CMD_SET_MAX] = {
 	"qcom,mdss-dsi-post-mode-switch-on-command",
 	"qcom,mdss-dsi-qsync-on-commands",
 	"qcom,mdss-dsi-qsync-off-commands",
-#ifdef OPLUS_BUG_STABILITY
-	"qcom,mdss-dsi-post-on-backlight",
-	"qcom,mdss-dsi-aod-on-command",
-	"qcom,mdss-dsi-aod-off-command",
-	"qcom,mdss-dsi-hbm-on-command",
-	"qcom,mdss-dsi-hbm-off-command",
-	"qcom,mdss-dsi-aod-hbm-on-command",
-	"qcom,mdss-dsi-aod-hbm-off-command",
-	"qcom,mdss-dsi-seed-0-command",
-	"qcom,mdss-dsi-seed-1-command",
-	"qcom,mdss-dsi-seed-2-command",
-	"qcom,mdss-dsi-seed-3-command",
-	"qcom,mdss-dsi-seed-4-command",
-	"qcom,mdss-dsi-seed-0-switch-command",
-	"qcom,mdss-dsi-seed-1-switch-command",
-	"qcom,mdss-dsi-seed-2-switch-command",
-	"qcom,mdss-dsi-seed-0-dc-switch-command",
-	"qcom,mdss-dsi-seed-1-dc-switch-command",
-	"qcom,mdss-dsi-seed-2-dc-switch-command",
-	"qcom,mdss-dsi-seed-0-dc-command",
-	"qcom,mdss-dsi-seed-1-dc-command",
-	"qcom,mdss-dsi-seed-2-dc-command",
-	"qcom,mdss-dsi-seed-off-command",
-	"qcom,mdss-dsi-normal-hbm-on-command",
-	"qcom,mdss-dsi-aod-high-mode-command",
-	"qcom,mdss-dsi-aod-low-mode-command",
-	"qcom,mdss-dsi-spr-0-command",
-	"qcom,mdss-dsi-spr-1-command",
-	"qcom,mdss-dsi-spr-2-command",
-	"qcom,mdss-dsi-data-dimming-on-command",
-	"qcom,mdss-dsi-data-dimming-off-command",
-	"qcom,mdss-dsi-osc-clk-mode0-command",
-	"qcom,mdss-dsi-osc-clk-mode1-command",
-	"qcom,mdss-dsi-osc-clk-mode2-command",
-	"qcom,mdss-dsi-osc-clk-mode3-command",
-	"qcom,mdss-dsi-failsafe-on-command",
-	"qcom,mdss-dsi-failsafe-off-command",
-	"qcom,mdss-dsi-seed-enter-command",
-	"qcom,mdss-dsi-seed-exit-command",
-	"qcom,mdss-dsi-panel-id1-command",
-	"qcom,mdss-dsi-panel-read-register-open-command",
-	"qcom,mdss-dsi-panel-read-register-close-command",
-	"qcom,mdss-dsi-mca-on-command",
-	"qcom,mdss-dsi-mca-off-command",
-	"qcom,mdss-dsi-loading-effect-1-command",
-	"qcom,mdss-dsi-loading-effect-2-command",
-	"qcom,mdss-dsi-loading-effect-off-command",
-	"qcom,mdss-dsi-hbm-enter-switch-command",
-	"qcom,mdss-dsi-hbm-enter1-switch-command",
-	"qcom,mdss-dsi-hbm-enter2-switch-command",
-	"qcom,mdss-dsi-hbm-exit-switch-command",
-	"qcom,mdss-dsi-hbm-exit1-switch-command",
-	"qcom,mdss-dsi-hbm-exit2-switch-command",
-	"qcom,mdss-dsi-aor-restore-command",
-	"qcom,mdss-dsi-lp1-pvt-command",
-	"qcom,mdss-dsi-nolp-pvt-command",
-	"qcom,mdss-dsi-aod-hbm-on-pvt-command",
-	"qcom,mdss-dsi-aod-hbm-off-pvt-command",
-	"qcom,mdss-dsi-dly-off-command",
-	"qcom,mdss-dsi-panel-register-read-command",
-	"qcom,mdss-dsi-panel-level2-key-enable-command",
-	"qcom,mdss-dsi-panel-level2-key-disable-command",
-	"qcom,mdss-dsi-fps-switch-command",
-	"qcom,mdss-dsi-cabc-off-command",
-	"qcom,mdss-dsi-cabc-1-command",
-	"qcom,mdss-dsi-cabc-2-command",
-	"qcom,mdss-dsi-cabc-3-command",
-	"qcom,mdss-dsi-gamma-nomal-command",
-	"qcom,mdss-dsi-gamma-lowbl-command",
-/* add for optimizing the display effect under low backlight brightness */
-	"qcom,mdss-dsi-panel-dimming-gamma-command",
-	"qcom,mdss-dsi-fps60-command",
-	"qcom,mdss-dsi-fps120-command",
-#if defined(OPLUS_FEATURE_PXLW_IRIS5)
-	"iris,abyp-panel-command",
-#endif
-#endif /*OPLUS_BUG_STABILITY*/
-
-#ifdef OPLUS_FEATURE_ADFR
-	"qcom,mdss-dsi-qsync-min-fps-0-command",
-	"qcom,mdss-dsi-qsync-min-fps-1-command",
-	"qcom,mdss-dsi-qsync-min-fps-2-command",
-	"qcom,mdss-dsi-qsync-min-fps-3-command",
-	"qcom,mdss-dsi-qsync-min-fps-4-command",
-	"qcom,mdss-dsi-qsync-min-fps-5-command",
-	"qcom,mdss-dsi-qsync-min-fps-6-command",
-	"qcom,mdss-dsi-qsync-min-fps-7-command",
-	"qcom,mdss-dsi-qsync-min-fps-8-command",
-	"qcom,mdss-dsi-qsync-min-fps-9-command",
-	"qcom,mdss-dsi-fakeframe-command",
-	"qcom,mdss-dsi-adfr-pre-switch-command",
-#endif
+	"qcom,mdss-dsi-panel-hbm-off-command",
+	"qcom,mdss-dsi-panel-hbm-on-command",
+	"qcom,mdss-dsi-panel-hbm-on-command-2",
+	"qcom,mdss-dsi-panel-hbm-on-command-3",
+	"qcom,mdss-dsi-panel-hbm-on-command-4",
+	"qcom,mdss-dsi-panel-hbm-on-command-5",
 };
 
 const char *cmd_set_state_map[DSI_CMD_SET_MAX] = {
@@ -2642,98 +2556,12 @@ const char *cmd_set_state_map[DSI_CMD_SET_MAX] = {
 	"qcom,mdss-dsi-post-mode-switch-on-command-state",
 	"qcom,mdss-dsi-qsync-on-commands-state",
 	"qcom,mdss-dsi-qsync-off-commands-state",
-#ifdef OPLUS_BUG_STABILITY
-	"qcom,mdss-dsi-post-on-backlight-state",
-	"qcom,mdss-dsi-aod-on-command-state",
-	"qcom,mdss-dsi-aod-off-command-state",
-	"qcom,mdss-dsi-hbm-on-command-state",
 	"qcom,mdss-dsi-hbm-off-command-state",
-	"qcom,mdss-dsi-aod-hbm-on-command-state",
-	"qcom,mdss-dsi-aod-hbm-off-command-state",
-	"qcom,mdss-dsi-seed-0-command-state",
-	"qcom,mdss-dsi-seed-1-command-state",
-	"qcom,mdss-dsi-seed-2-command-state",
-	"qcom,mdss-dsi-seed-3-command-state",
-	"qcom,mdss-dsi-seed-4-command-state",
-	"qcom,mdss-dsi-seed-0-switch-command-state",
-	"qcom,mdss-dsi-seed-1-switch-command-state",
-	"qcom,mdss-dsi-seed-2-switch-command-state",
-	"qcom,mdss-dsi-seed-0-dc-switch-command-state",
-	"qcom,mdss-dsi-seed-1-dc-switch-command-state",
-	"qcom,mdss-dsi-seed-2-dc-switch-command-state",
-	"qcom,mdss-dsi-seed-0-dc-command-state",
-	"qcom,mdss-dsi-seed-1-dc-command-state",
-	"qcom,mdss-dsi-seed-2-dc-command-state",
-	"qcom,mdss-dsi-seed-off-command-state",
-	"qcom,mdss-dsi-normal-hbm-on-command-state",
-	"qcom,mdss-dsi-aod-high-mode-command-state",
-	"qcom,mdss-dsi-aod-low-mode-command-state",
-	"qcom,mdss-dsi-spr-0-command-state",
-	"qcom,mdss-dsi-spr-1-command-state",
-	"qcom,mdss-dsi-spr-2-command-state",
-	"qcom,mdss-dsi-data-dimming-on-command-state",
-	"qcom,mdss-dsi-data-dimming-off-command-state",
-	"qcom,mdss-dsi-osc-clk-mode0-command-state",
-	"qcom,mdss-dsi-osc-clk-mode1-command-state",
-	"qcom,mdss-dsi-osc-clk-mode2-command-state",
-	"qcom,mdss-dsi-osc-clk-mode3-command-state",
-	"qcom,mdss-dsi-failsafe-on-command-state",
-	"qcom,mdss-dsi-failsafe-off-command-state",
-	"qcom,mdss-dsi-seed-enter-command-state",
-	"qcom,mdss-dsi-seed-exit-command-state",
-	"qcom,mdss-dsi-panel-id1-command-state",
-	"qcom,mdss-dsi-panel-read-register-open-state",
-	"qcom,mdss-dsi-panel-read-register-close-state",
-	"qcom,mdss-dsi-mca-on-command-state",
-	"qcom,mdss-dsi-mca-off-command-state",
-	"qcom,mdss-dsi-loading-effect-1-command-state",
-	"qcom,mdss-dsi-loading-effect-2-command-state",
-	"qcom,mdss-dsi-loading-effect-off-command-state",
-	"qcom,mdss-dsi-hbm-enter-switch-command-state",
-	"qcom,mdss-dsi-hbm-enter1-switch-command-state",
-	"qcom,mdss-dsi-hbm-enter2-switch-command-state",
-	"qcom,mdss-dsi-hbm-exit-switch-command-state",
-	"qcom,mdss-dsi-hbm-exit1-switch-command-state",
-	"qcom,mdss-dsi-hbm-exit2-switch-command-state",
-	"qcom,mdss-dsi-aor-restore-command-state",
-	"qcom,mdss-dsi-lp1-pvt-command-state",
-	"qcom,mdss-dsi-nolp-pvt-command-state",
-	"qcom,mdss-dsi-aod-hbm-on-pvt-command-state",
-	"qcom,mdss-dsi-aod-hbm-off-pvt-command-state",
-	"qcom,mdss-dsi-dly-off-command-state",
-	"qcom,mdss-dsi-panel-register-read-command-state",
-	"qcom,mdss-dsi-panel-level2-key-enable-command-state",
-	"qcom,mdss-dsi-panel-level2-key-disable-command-state",
-	"qcom,mdss-dsi-fps-switch-command-state",
-	"qcom,mdss-dsi-cabc-off-command-state",
-	"qcom,mdss-dsi-cabc-1-command-state",
-	"qcom,mdss-dsi-cabc-2-command-state",
-	"qcom,mdss-dsi-cabc-3-command-state",
-	"qcom,mdss-dsi-gamma-nomal-command-state",
-	"qcom,mdss-dsi-gamma-lowbl-command-state",
-/* add for optimizing the display effect under low backlight brightness */
-	"qcom,mdss-dsi-panel-dimming-gamma-command-state",
-	"qcom,mdss-dsi-fps60-command-state",
-	"qcom,mdss-dsi-fps120-command-state",
-#if defined(OPLUS_FEATURE_PXLW_IRIS5)
-	"iris,abyp-panel-command-state",
-#endif
-#endif /*OPLUS_BUG_STABILITY*/
-
-#ifdef OPLUS_FEATURE_ADFR
-	"qcom,mdss-dsi-qsync-min-fps-0-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-1-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-2-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-3-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-4-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-5-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-6-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-7-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-8-command-state",
-	"qcom,mdss-dsi-qsync-min-fps-9-command-state",
-	"qcom,mdss-dsi-fakeframe-command-state",
-	"qcom,mdss-dsi-adfr-pre-switch-command-state",
-#endif
+	"qcom,mdss-dsi-hbm-on-command-state",
+	"qcom,mdss-dsi-hbm-on-command-state",
+	"qcom,mdss-dsi-hbm-on-command-state",
+	"qcom,mdss-dsi-hbm-on-command-state",
+	"qcom,mdss-dsi-hbm-on-command-state",
 };
 
 static int dsi_panel_get_cmd_pkt_count(const char *data, u32 length, u32 *cnt)
@@ -5889,6 +5717,10 @@ int dsi_panel_enable(struct dsi_panel *panel)
 #endif
 
 	mutex_unlock(&panel->panel_lock);
+
+	if (panel->hbm_mode)
+		dsi_panel_apply_hbm_mode(panel);
+
 	return rc;
 }
 
@@ -6066,5 +5898,31 @@ int dsi_panel_post_unprepare(struct dsi_panel *panel)
 	}
 error:
 	mutex_unlock(&panel->panel_lock);
+	return rc;
+}
+
+int dsi_panel_apply_hbm_mode(struct dsi_panel *panel)
+{
+	static const enum dsi_cmd_set_type type_map[] = {
+		DSI_CMD_SET_HBM_OFF,
+		DSI_CMD_SET_HBM_ON_1,
+		DSI_CMD_SET_HBM_ON_2,
+		DSI_CMD_SET_HBM_ON_3,
+		DSI_CMD_SET_HBM_ON_4,
+		DSI_CMD_SET_HBM_ON_5
+	};
+
+	enum dsi_cmd_set_type type;
+	int rc;
+
+	if (panel->hbm_mode >= 0 && panel->hbm_mode < ARRAY_SIZE(type_map))
+		type = type_map[panel->hbm_mode];
+	else
+		type = DSI_CMD_SET_HBM_OFF;
+
+	mutex_lock(&panel->panel_lock);
+	rc = dsi_panel_tx_cmd_set(panel, type);
+	mutex_unlock(&panel->panel_lock);
+
 	return rc;
 }
