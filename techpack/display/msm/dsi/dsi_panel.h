@@ -143,6 +143,7 @@ struct dsi_backlight_config {
 	u32 bl_lvl_backup;
 #endif /* OPLUS_BUG_STABILITY */
 	u32 bl_dcs_subtype;
+	bool bl_high2bit;
 
 	int en_gpio;
 	/* PWM params */
