@@ -1354,7 +1354,15 @@ config TOUCHSCREEN_SYNAPTICS_TCM
 	  To compile this driver as a module, choose M here: the
 	  module will be called synaptics_tcm.
 
-#source "drivers/input/touchscreen/synaptics_tcm/Kconfig"
+config TOUCHSCREEN_SYNAPTICS_S3320_I2C_RMI
+	tristate "Synaptics s3320 i2c touchscreen"
+	depends on I2C
+	help
+	  This enables support for Synaptics s1302 RMI over I2C based touch key.
+
+source "drivers/input/touchscreen/synaptics_tcm/Kconfig"
+
+source "drivers/input/touchscreen/focaltech_touch/Kconfig"
 
 source "drivers/input/touchscreen/nt36xxx/Kconfig"
 
