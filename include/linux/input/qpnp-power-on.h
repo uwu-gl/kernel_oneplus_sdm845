@@ -46,40 +46,7 @@ enum pon_power_off_type {
 	PON_POWER_OFF_MAX_TYPE		= 0x10,
 };
 
-enum pon_restart_reason {
-	PON_RESTART_REASON_UNKNOWN		= 0x00,
-	PON_RESTART_REASON_RECOVERY		= 0x01,
-	PON_RESTART_REASON_BOOTLOADER		= 0x02,
-	PON_RESTART_REASON_RTC			= 0x03,
-	PON_RESTART_REASON_DMVERITY_CORRUPTED	= 0x04,
-	PON_RESTART_REASON_DMVERITY_ENFORCE	= 0x05,
-	PON_RESTART_REASON_KEYS_CLEAR		= 0x06,
-#ifdef OPLUS_BUG_STABILITY
-/* Add for oplus boot mode*/
-	PON_RESTART_REASON_SILENCE			= 0x21,
-	PON_RESTART_REASON_SAU				= 0x22,
-	PON_RESTART_REASON_RF				= 0x23,
-	PON_RESTART_REASON_WLAN				= 0x24,
-	PON_RESTART_REASON_MOS				= 0x25,
-	PON_RESTART_REASON_FACTORY			= 0x26,
-	PON_RESTART_REASON_KERNEL			= 0x27,
-	PON_RESTART_REASON_MODEM			= 0x28,
-	PON_RESTART_REASON_ANDROID			= 0x29,
-	PON_RESTART_REASON_SAFE				= 0x2A,
-	#ifdef OPLUS_FEATURE_AGINGTEST
-	//Add for factory agingtest
-	PON_RESTART_REASON_SBL_DDRTEST			= 0x2B,
-	PON_RESTART_REASON_SBL_DDR_CUS			= 0x2C,
-	PON_RESTART_REASON_MEM_AGING			= 0x2D,
-	//0x2E is SBLTEST FAIL, just happen in ddrtest fail when xbl setup
-	#endif
-	PON_RESTART_REASON_REBOOT_NO_VIBRATION		= 0x2F,
-	PON_RESTART_REASON_NORMAL			= 0x3E,
-#endif
-};
-
-#ifdef OPLUS_FEATURE_QCOM_PMICWD
-#ifdef CONFIG_OPLUS_FEATURE_QCOM_PMICWD
+/* david.liu@bsp, 20171023 Battery & Charging porting */
 struct qpnp_pon {
 	struct device		*dev;
 	struct regmap		*regmap;
@@ -88,14 +55,7 @@ struct qpnp_pon {
 	struct pon_regulator	*pon_reg_cfg;
 	struct list_head	list;
 	struct delayed_work	bark_work;
-#ifdef CONFIG_OPLUS_FEATURE_MISC
-	struct delayed_work press_work;
-#endif
 	struct dentry		*debugfs;
-	struct task_struct *wd_task;
-	struct mutex		wd_task_mutex;
-	unsigned int		pmicwd_state;//|reserver|rst type|timeout|enable|
-	u8					suspend_state;//record the suspend state
 	u16			base;
 	u8			subtype;
 	u8			pon_ver;
@@ -125,13 +85,36 @@ struct qpnp_pon {
 	bool			log_kpd_event;
 };
 
-extern const struct dev_pm_ops qpnp_pm_ops;
-extern struct qpnp_pon *sys_reset_dev;
-int qpnp_pon_masked_write(struct qpnp_pon *pon, u16 addr, u8 mask, u8 val);
-void pmicwd_init(struct platform_device *pdev, struct qpnp_pon *pon, bool sys_reset);
-void kpdpwr_init(struct qpnp_pon *pon,  bool sys_reset);
-#endif
-#endif /* OPLUS_FEATURE_QCOM_PMICWD */
+enum pon_restart_reason {
+	PON_RESTART_REASON_UNKNOWN		= 0x00,
+	PON_RESTART_REASON_RECOVERY		= 0x01,
+	PON_RESTART_REASON_BOOTLOADER		= 0x02,
+	PON_RESTART_REASON_RTC			= 0x03,
+	PON_RESTART_REASON_DMVERITY_CORRUPTED	= 0x04,
+	PON_RESTART_REASON_DMVERITY_ENFORCE	= 0x05,
+	PON_RESTART_REASON_KEYS_CLEAR		= 0x06,
+	PON_RESTART_REASON_AGING		= 0x07,
+	PON_RESTART_REASON_REBOOT		= 0x10,
+	PON_RESTART_REASON_FACTORY		= 0x11,
+	PON_RESTART_REASON_WLAN 		= 0x12,
+	PON_RESTART_REASON_RF			= 0x13,
+	PON_RESTART_REASON_MOS			= 0x14,
+	PON_RESTART_REASON_KERNEL		= 0x15,
+	PON_RESTART_REASON_ANDROID		= 0x16,
+	PON_RESTART_REASON_MODEM		= 0x17,
+	PON_RESTART_REASON_PANIC		= 0x18,
+};
+
+/* Define OEM reboot mode magic*/
+#define AGING_MODE		0x77665510
+#define FACTORY_MODE	0x77665504
+#define WLAN_MODE		0x77665505
+#define RF_MODE			0x77665506
+#define MOS_MODE		0x77665507
+#define KERNEL_MODE		0x7766550d
+#define ANDROID_MODE	0x7766550c
+#define MODEM_MODE		0x7766550b
+#define OEM_PANIC		0x77665518
 
 #ifdef CONFIG_INPUT_QPNP_POWER_ON
 int qpnp_pon_system_pwr_off(enum pon_power_off_type type);
