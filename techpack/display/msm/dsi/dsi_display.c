@@ -22,53 +22,7 @@
 #include "sde_dbg.h"
 #include "dsi_parser.h"
 
-#ifdef OPLUS_FEATURE_ADFR
-#include "oplus_adfr.h"
-#endif
-
-#if defined(OPLUS_FEATURE_PXLW_IRIS5)
-#include "iris/dsi_iris5_api.h"
-#include "iris/dsi_iris5_lightup.h"
-#include "iris/dsi_iris5_loop_back.h"
-#include <video/mipi_display.h>
-#elif defined(CONFIG_PXLW_SOFT_IRIS)
-#include "iris/dsi_iris5_api.h"
-#endif
-#ifdef OPLUS_BUG_STABILITY
-#include <soc/oplus/system/oplus_mm_kevent_fb.h>
-#include <linux/msm_drm_notify.h>
-#include <linux/notifier.h>
-#include "oplus_display_private_api.h"
-#include "oplus_ffl.h"
-extern int msm_drm_notifier_call_chain(unsigned long val, void *v);
-/* Don't panic if smmu fault*/
-extern int sde_kms_set_smmu_no_fatal_faults(struct drm_device *drm);
-#ifdef OPLUS_BUG_STABILITY
-__attribute__((weak)) void sec_refresh_switch(int fps)
-{
-    return;
-}
-#endif /* OPLUS_BUG_STABILITY */
-
-#ifdef OPLUS_FEATURE_TP_BASIC
-__attribute__((weak)) void lcd_tp_refresh_switch(int fps)
-{
-    return;
-}
-#endif /* OPLUS_FEATURE_TP_BASIC*/
-
-#ifdef OPLUS_FEATURE_ADFR
-extern struct oplus_te_refcount te_refcount;
-#endif
-
-/* Add for solve sau issue*/
-extern int lcd_closebl_flag;
-/* Add for fingerprint silence*/
-extern int lcd_closebl_flag_fp;
-/* Add for ffl feature */
-extern bool oplus_ffl_trigger_finish;
-#endif
-
+#define to_dsi_bridge(x) container_of((x), struct dsi_bridge, base)
 #define to_dsi_display(x) container_of(x, struct dsi_display, host)
 #define INT_BASE_10 10
 
@@ -96,6 +50,8 @@ static const struct of_device_id dsi_display_dt_match[] = {
 	{.compatible = "qcom,dsi-display"},
 	{}
 };
+
+static struct dsi_display *primary_display;
 
 static void dsi_display_mask_ctrl_error_interrupts(struct dsi_display *display,
 			u32 mask, bool enable)
@@ -271,6 +227,7 @@ int dsi_display_set_backlight(struct drm_connector *connector,
 
 	mutex_lock(&panel->panel_lock);
 	if (!dsi_panel_initialized(panel)) {
+		panel->hbm_backlight = bl_lvl;
 		rc = -EINVAL;
 		goto error;
 	}
@@ -7065,6 +7022,7 @@ int dsi_display_get_modes(struct dsi_display *display,
 
 exit:
 	*out_modes = display->modes;
+	primary_display = display;
 	rc = 0;
 
 error:
@@ -7802,6 +7760,131 @@ static void dsi_display_register_error_handler(struct dsi_display *display)
 		ctrl = &display->ctrl[i];
 		ctrl->ctrl->irq_info.irq_err_cb = event_info;
 	}
+}
+
+int dsi_display_set_hbm_mode(struct drm_connector *connector, int level)
+{
+	struct dsi_display *dsi_display = NULL;
+	struct dsi_panel *panel = NULL;
+	struct dsi_bridge *c_bridge;
+	int rc = 0;
+
+	if ((connector == NULL) ||
+	    (connector->encoder == NULL) ||
+	    (connector->encoder->bridge == NULL))
+		return 0;
+
+	c_bridge =  to_dsi_bridge(connector->encoder->bridge);
+	dsi_display = c_bridge->display;
+
+	if ((dsi_display == NULL) || (dsi_display->panel == NULL))
+		return -EINVAL;
+
+	panel = dsi_display->panel;
+
+	mutex_lock(&dsi_display->display_lock);
+
+	panel->hbm_mode = level;
+	if (!dsi_panel_initialized(panel)) {
+		goto error;
+	}
+
+	rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
+			DSI_CORE_CLK, DSI_CLK_ON);
+	if (rc) {
+		pr_err("[%s] failed to enable DSI core clocks, rc=%d\n",
+			dsi_display->name, rc);
+		goto error;
+	}
+
+	rc = dsi_panel_set_hbm_mode(panel, level);
+	if (rc)
+		pr_err("unable to set hbm mode\n");
+
+	rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
+			DSI_CORE_CLK, DSI_CLK_OFF);
+	if (rc) {
+		pr_err("[%s] failed to disable DSI core clocks, rc=%d\n",
+			dsi_display->name, rc);
+		goto error;
+	}
+error:
+	mutex_unlock(&dsi_display->display_lock);
+	return rc;
+}
+
+int dsi_display_get_hbm_mode(struct drm_connector *connector)
+{
+	struct dsi_display *dsi_display = NULL;
+	struct dsi_bridge *c_bridge;
+
+	if ((connector == NULL) ||
+	    (connector->encoder == NULL) ||
+	    (connector->encoder->bridge == NULL))
+		return 0;
+
+	c_bridge =  to_dsi_bridge(connector->encoder->bridge);
+	dsi_display = c_bridge->display;
+
+	if ((dsi_display == NULL) || (dsi_display->panel == NULL))
+		return 0;
+
+	return dsi_display->panel->hbm_mode;
+}
+
+
+extern int oneplus_force_screenfp;
+
+int dsi_display_set_fp_hbm_mode(struct drm_connector *connector, int level)
+{
+	struct dsi_display *dsi_display = NULL;
+	struct dsi_panel *panel = NULL;
+	struct dsi_bridge *c_bridge;
+	int rc = 0;
+
+	if ((connector == NULL) ||
+	    (connector->encoder == NULL) ||
+	    (connector->encoder->bridge == NULL))
+		return 0;
+
+	c_bridge = to_dsi_bridge(connector->encoder->bridge);
+	dsi_display = c_bridge->display;
+
+	if ((dsi_display == NULL) || (dsi_display->panel == NULL))
+		return -EINVAL;
+
+	panel = dsi_display->panel;
+
+	mutex_lock(&dsi_display->display_lock);
+
+	panel->op_force_screenfp = level;
+	oneplus_force_screenfp=panel->op_force_screenfp;
+
+	if (!dsi_panel_initialized(panel))
+		goto error;
+
+	rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
+			DSI_CORE_CLK, DSI_CLK_ON);
+	if (rc) {
+		pr_err("[%s] failed to enable DSI core clocks, rc=%d\n",
+			dsi_display->name, rc);
+		goto error;
+	}
+
+	rc = dsi_panel_op_set_hbm_mode(panel, level);
+	if (rc)
+		pr_err("unable to set hbm mode\n");
+
+	rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
+			DSI_CORE_CLK, DSI_CLK_OFF);
+	if (rc) {
+		pr_err("[%s] failed to disable DSI core clocks, rc=%d\n",
+			dsi_display->name, rc);
+		goto error;
+	}
+error:
+	mutex_unlock(&dsi_display->display_lock);
+	return rc;
 }
 
 static void dsi_display_unregister_error_handler(struct dsi_display *display)
@@ -8796,12 +8879,103 @@ int dsi_display_unprepare(struct dsi_display *display)
 	return rc;
 }
 
-#ifdef OPLUS_BUG_STABILITY
+int dsi_display_set_aod_mode(struct drm_connector *connector, int level)
+{
+	struct dsi_display *dsi_display = NULL;
+	struct dsi_panel *panel = NULL;
+	struct dsi_bridge *c_bridge;
+	int rc = 0;
+
+	if ((connector == NULL) ||
+	    (connector->encoder == NULL) ||
+	    (connector->encoder->bridge == NULL))
+		return 0;
+
+	c_bridge =  to_dsi_bridge(connector->encoder->bridge);
+	dsi_display = c_bridge->display;
+
+	if ((dsi_display == NULL) || (dsi_display->panel == NULL))
+		return -EINVAL;
+
+	panel = dsi_display->panel;
+	panel->aod_mode = level;
+	if (strcmp(dsi_display->panel->name, "samsung s6e3fc2x01 cmd mode dsi panel") == 0) {
+		printk(KERN_ERR "dsi_display_set_aod_mode\n");
+	} else {
+		dsi_display->panel->aod_mode = 0;
+		return 0;
+	}
+	mutex_lock(&dsi_display->display_lock);
+	if (!dsi_panel_initialized(panel)) {
+		goto error;
+	}
+	rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
+			DSI_CORE_CLK, DSI_CLK_ON);
+	if (rc) {
+		pr_err("[%s] failed to enable DSI core clocks, rc=%d\n",
+			dsi_display->name, rc);
+		goto error;
+	}
+	rc = dsi_panel_set_aod_mode(panel, level);
+	if (rc)
+		pr_err("unable to set aod mode\n");
+
+	rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
+			DSI_CORE_CLK, DSI_CLK_OFF);
+	if (rc) {
+		pr_err("[%s] failed to disable DSI core clocks, rc=%d\n",
+			dsi_display->name, rc);
+		goto error;
+	}
+
+error:
+	mutex_unlock(&dsi_display->display_lock);
+
+	return rc;
+}
+
+int dsi_display_get_aod_mode(struct drm_connector *connector)
+{
+	struct dsi_display *dsi_display = NULL;
+	struct dsi_bridge *c_bridge;
+
+	if ((connector == NULL) ||
+	    (connector->encoder == NULL) ||
+	    (connector->encoder->bridge == NULL))
+		return 0;
+
+	c_bridge =  to_dsi_bridge(connector->encoder->bridge);
+	dsi_display = c_bridge->display;
+
+	if ((dsi_display == NULL) || (dsi_display->panel == NULL))
+		return 0;
+
+	return dsi_display->panel->aod_mode;
+}
+
+int dsi_display_get_fp_hbm_mode(struct drm_connector *connector)
+{
+	struct dsi_display *dsi_display = NULL;
+	struct dsi_bridge *c_bridge;
+
+	if ((connector == NULL) ||
+	    (connector->encoder == NULL) ||
+	    (connector->encoder->bridge == NULL))
+		return 0;
+
+	c_bridge =  to_dsi_bridge(connector->encoder->bridge);
+	dsi_display = c_bridge->display;
+
+	if ((dsi_display == NULL) || (dsi_display->panel == NULL))
+		return 0;
+
+	return dsi_display->panel->op_force_screenfp;
+}
+
 struct dsi_display *get_main_display(void) {
-		return primary_display;
+	return primary_display;
 }
 EXPORT_SYMBOL(get_main_display);
-#endif
 
 static int __init dsi_display_register(void)
 {
