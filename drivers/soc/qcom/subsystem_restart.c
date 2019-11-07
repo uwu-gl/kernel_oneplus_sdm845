@@ -911,29 +911,21 @@ struct subsys_device *find_subsys_device(const char *str)
 }
 EXPORT_SYMBOL(find_subsys_device);
 
-#ifdef OPLUS_BUG_STABILITY
-int op_restart_modem(struct subsys_device *subsys)
+static int restart_level;/*system original val*/
+int op_restart_modem(void)
 {
-	int restart_level;
+	struct subsys_device *subsys = find_subsys_device("modem");
 
-	if (!subsys) {
+	if (!subsys)
 		return -ENODEV;
-	}
-
-	pr_err("%s\n", __func__);
-
 	restart_level = subsys->restart_level;
 	subsys->restart_level = RESET_SUBSYS_COUPLED;
-	if (subsys->desc->force_reset) {
-		subsys->desc->force_reset(subsys->desc);
-	}
-
+	if (subsystem_restart("modem") == -ENODEV)
+		pr_err("%s: SSR call failed\n", __func__);
 	subsys->restart_level = restart_level;
-
 	return 0;
 }
 EXPORT_SYMBOL(op_restart_modem);
-#endif /* OPLUS_BUG_STABILITY */
 
 static int subsys_start(struct subsys_device *subsys)
 {
