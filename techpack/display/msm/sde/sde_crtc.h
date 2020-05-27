@@ -446,6 +446,7 @@ struct sde_crtc_state {
 #endif
 	int secure_session;
 
+    bool fingerprint_mode;
     bool fingerprint_pressed;
     struct sde_hw_dim_layer *fingerprint_dim_layer;
 };
