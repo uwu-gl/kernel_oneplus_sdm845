@@ -399,6 +399,10 @@ snd-soc-tas2780-y := tas2780.o
 # Mux
 snd-soc-simple-mux-y := simple-mux.o
 
+snd-soc-tas2559-objs := tas2559.o
+ccflags-y += -DDEBUG
+obj-$(CONFIG_SND_SOC_TAS2559) += snd-soc-tas2559.o
+
 obj-$(CONFIG_SND_SOC_88PM860X)	+= snd-soc-88pm860x.o
 obj-$(CONFIG_SND_SOC_AB8500_CODEC)	+= snd-soc-ab8500-codec.o
 obj-$(CONFIG_SND_SOC_AC97_CODEC)	+= snd-soc-ac97.o
