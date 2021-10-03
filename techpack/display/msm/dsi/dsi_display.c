@@ -232,50 +232,9 @@ int dsi_display_set_backlight(struct drm_connector *connector,
 		goto error;
 	}
 
-#ifdef OPLUS_BUG_STABILITY
-	if ((bl_lvl == 0 && panel->bl_config.bl_level != 0) ||
-	    (bl_lvl != 0 && panel->bl_config.bl_level == 0)){
-		pr_err("backlight level changed %d -> %d\n",
-		       panel->bl_config.bl_level, bl_lvl);
-	}else if (panel->bl_config.bl_level == 1){
-		pr_err("aod backlight level changed %d -> %d\n",
-		      panel->bl_config.bl_level, bl_lvl);
-	}
-#ifdef OPLUS_FEATURE_AOD_RAMLESS
-	if (dsi_display->panel->oplus_priv.is_aod_ramless) {
-		panel->bl_config.bl_level = bl_lvl;
-		DSI_DEBUG("debug: bl_config.bl_level=%u\n", panel->bl_config.bl_level);
-	}
-#endif
-	/* Add some delay to avoid screen flash */
-	if (panel->need_power_on_backlight && bl_lvl) {
-		panel->need_power_on_backlight = false;
-		rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
-			DSI_CORE_CLK, DSI_CLK_ON);
-		if (rc) {
-			pr_err("[%s] failed to send DSI_CMD_POST_ON_BACKLIGHT cmds, rc=%d\n",
-			       panel->name, rc);
-			goto error;
-		}
+	if (bl_lvl != 0 && panel->bl_config.bl_level == 0)
+		dsi_panel_apply_display_mode_locked(panel);
 
-		rc = dsi_panel_tx_cmd_set(panel, DSI_CMD_POST_ON_BACKLIGHT);
-
-		rc = dsi_display_clk_ctrl(dsi_display->dsi_clk_handle,
-			DSI_CORE_CLK, DSI_CLK_OFF);
-
-		if (!panel->oplus_priv.esd_err_flag_enabled) {
-			atomic_set(&panel->esd_pending, 0);
-		}
-
-		if (rc) {
-			pr_err("[%s] failed to send DSI_CMD_POST_ON_BACKLIGHT cmds, rc=%d\n",
-			       panel->name, rc);
-			goto error;
-		}
-
-		oplus_start_ffl_thread();
-	}
-#endif /* OPLUS_BUG_STABILITY */
 	panel->bl_config.bl_level = bl_lvl;
 #ifdef OPLUS_BUG_STABILITY
 	if (oplus_ffl_trigger_finish == false)
