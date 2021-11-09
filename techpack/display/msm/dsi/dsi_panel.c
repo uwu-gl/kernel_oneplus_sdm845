@@ -5664,6 +5664,11 @@ int dsi_panel_post_switch(struct dsi_panel *panel)
 	return rc;
 }
 
+extern bool oneplus_dimlayer_hbm_enable;
+extern bool backup_dimlayer_hbm;
+extern int oneplus_dim_status;
+extern int backup_dim_status;
+
 int dsi_panel_enable(struct dsi_panel *panel)
 {
 	int rc = 0;
@@ -5718,34 +5723,10 @@ int dsi_panel_enable(struct dsi_panel *panel)
 		       panel->name, rc);
 	else
 		panel->panel_initialized = true;
-#ifdef OPLUS_BUG_STABILITY
-	if (panel->oplus_priv.gamma_switch_enable && (panel->cur_mode->timing.refresh_rate == 90)) {
-		dsi_panel_write_gamma_90(panel);
-	}
 
-/* add for optimizing the display effect under low backlight brightness */
-	rc = oplus_dimming_gamma_write(panel);
-	if (rc)
-		DSI_ERR("Failed to write dimming gamma, rc=%d\n", rc);
-#endif /*OPLUS_BUG_STABILITY*/
-
-#ifdef OPLUS_FEATURE_ADFR
-	if (oplus_adfr_is_support()) {
-		dsi_panel_adfr_status_reset(panel);
-	}
-#endif /* OPLUS_FEATURE_ADFR */
-
-#if defined(OPLUS_FEATURE_PXLW_IRIS5)
-	if (panel->is_secondary) {
-		mutex_unlock(&panel->panel_lock);
-		return rc;
-	}
-#endif
-
-#ifdef OPLUS_BUG_STABILITY
-	panel->need_power_on_backlight = true;
-	set_oplus_display_power_status(OPLUS_DISPLAY_POWER_ON);
-#endif
+	oneplus_dimlayer_hbm_enable = backup_dimlayer_hbm;
+	oneplus_dim_status = backup_dim_status;
+	pr_err("Restore dim when panel goes on");
 
 	mutex_unlock(&panel->panel_lock);
 
@@ -5845,6 +5826,10 @@ int dsi_panel_disable(struct dsi_panel *panel)
 			panel->power_mode == SDE_MODE_DPMS_LP2))
 			dsi_pwr_panel_regulator_mode_set(&panel->power_info,
 				"ibb", REGULATOR_MODE_STANDBY);
+		oneplus_dimlayer_hbm_enable = false;
+		oneplus_dim_status = 0;
+		pr_err("Kill dim when panel goes off");
+
 		if (panel->aod_mode == 2)
 			panel->aod_status = 1;
 		else if (panel->aod_mode == 0)
