@@ -5110,6 +5110,7 @@ error:
 	return rc;
 }
 
+extern int oneplus_panel_status;
 int dsi_panel_set_lp1(struct dsi_panel *panel)
 {
 	int rc = 0;
@@ -5146,12 +5147,9 @@ int dsi_panel_set_lp1(struct dsi_panel *panel)
 	if (rc)
 		DSI_ERR("[%s] failed to send DSI_CMD_SET_LP1 cmd, rc=%d\n",
 		       panel->name, rc);
-#ifdef OPLUS_BUG_STABILITY
-	oplus_set_aod_gamma_data_status(panel);
-	oplus_update_aod_light_mode_unlock(panel);
-	panel->need_power_on_backlight = true;
-	set_oplus_display_power_status(OPLUS_DISPLAY_POWER_DOZE);
-#endif
+
+	oneplus_panel_status = 3; // DISPLAY_POWER_DOZE
+
 exit:
 	mutex_unlock(&panel->panel_lock);
 	return rc;
@@ -5178,9 +5176,9 @@ int dsi_panel_set_lp2(struct dsi_panel *panel)
 	if (rc)
 		DSI_ERR("[%s] failed to send DSI_CMD_SET_LP2 cmd, rc=%d\n",
 		       panel->name, rc);
-#ifdef OPLUS_BUG_STABILITY
-	set_oplus_display_power_status(OPLUS_DISPLAY_POWER_DOZE_SUSPEND);
-#endif
+
+	oneplus_panel_status = 4; // DISPLAY_POWER_DOZE_SUSPEND
+
 exit:
 	mutex_unlock(&panel->panel_lock);
 	return rc;
@@ -5220,26 +5218,8 @@ int dsi_panel_set_nolp(struct dsi_panel *panel)
 		DSI_ERR("[%s] failed to send DSI_CMD_SET_NOLP cmd, rc=%d\n",
 		       panel->name, rc);
 
-#ifdef OPLUS_BUG_STABILITY
-	if ((!strcmp(panel->oplus_priv.vendor_name, "AMS643YE01") ||
-		!strcmp(panel->oplus_priv.vendor_name, "AMS643YE01IN20057") ||
-		!strcmp(panel->name, "s6e3fc3_fhd_oled_cmd_samsung") ||
-		!strcmp(panel->oplus_priv.vendor_name, "SOFE03F")) &&
-		(panel->bl_config.bl_level > panel->bl_config.brightness_normal_max_level)) {
-		if (!strcmp(panel->name,"samsung ams643ye01 in 20127 amoled fhd+ panel")) {
-			rc = dsi_panel_tx_cmd_set(panel, DSI_CMD_HBM_ENTER1_SWITCH);
-			oplus_dsi_display_enable_and_waiting_for_next_te_irq();
-			rc = dsi_panel_tx_cmd_set(panel, DSI_CMD_HBM_ENTER2_SWITCH);
-		} else {
-			rc = dsi_panel_tx_cmd_set(panel, DSI_CMD_HBM_ENTER_SWITCH);
-		}
-		oplus_panel_update_backlight_unlock(panel);
-	}
-#endif
+	oneplus_panel_status = 2; // DISPLAY_POWER_ON
 
-#ifdef OPLUS_BUG_STABILITY
-	set_oplus_display_power_status(OPLUS_DISPLAY_POWER_ON);
-#endif
 exit:
 	mutex_unlock(&panel->panel_lock);
 	return rc;
@@ -5724,6 +5704,7 @@ int dsi_panel_enable(struct dsi_panel *panel)
 	else
 		panel->panel_initialized = true;
 
+	oneplus_panel_status = 2; // DISPLAY_POWER_ON
 	oneplus_dimlayer_hbm_enable = backup_dimlayer_hbm;
 	oneplus_dim_status = backup_dim_status;
 	pr_err("Restore dim when panel goes on");
@@ -5861,6 +5842,7 @@ int dsi_panel_disable(struct dsi_panel *panel)
 			rc = 0;
 		}
 	}
+	oneplus_panel_status = 0; // DISPLAY_POWER_OFF
 	panel->panel_initialized = false;
 #ifdef OPLUS_BUG_STABILITY
 	last_fps = 0;
@@ -6038,6 +6020,7 @@ int dsi_panel_set_aod_mode(struct dsi_panel *panel, int level)
 			aod_complete = false;
 		}
 	}
+	oneplus_panel_status = 0; // DISPLAY_POWER_OFF
 
 	panel->aod_curr_mode = level;
 	pr_err("AOD MODE = %d\n", level);
