@@ -516,7 +516,7 @@ struct page *__read_swap_cache_async(swp_entry_t entry, gfp_t gfp_mask,
 		/* May fail (-ENOMEM) if radix-tree node allocation failed. */
 		__SetPageLocked(new_page);
 		__SetPageSwapBacked(new_page);
-		err = __add_to_swap_cache(new_page, entry, NULL);
+		err = __add_to_swap_cache(new_page, entry, &shadow);
 		if (likely(!err)) {
 			radix_tree_preload_end();
 			/*
