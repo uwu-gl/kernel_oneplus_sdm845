@@ -1130,12 +1130,6 @@ static int copy_pte_range(struct mm_struct *dst_mm, struct mm_struct *src_mm,
 	spinlock_t *src_ptl, *dst_ptl;
 	int progress = 0;
 	int rss[NR_MM_COUNTERS];
-
-#ifdef OPLUS_BUG_STABILITY
-//Bin.Xu @ BSP.Kernel.Stability, 2020/4/1, checklist: flush_tlb_range for dirty pages
-	unsigned long orig_addr = addr;
-#endif /* OPLUS_BUG_STABILITY */
-
 	swp_entry_t entry = (swp_entry_t){0};
 
 again:
@@ -1174,14 +1168,6 @@ again:
 	} while (dst_pte++, src_pte++, addr += PAGE_SIZE, addr != end);
 
 	arch_leave_lazy_mmu_mode();
-
-#ifdef OPLUS_BUG_STABILITY
-//Bin.Xu @ BSP.Kernel.Stability, 2020/4/1, checklist: flush_tlb_range for dirty pages
-	if (IS_ENABLED(CONFIG_SPECULATIVE_PAGE_FAULT) &&
-		is_cow_mapping(vma->vm_flags))
-		flush_tlb_range(vma, orig_addr, end);
-#endif /* OPLUS_BUG_STABILITY */
-
 	spin_unlock(src_ptl);
 	pte_unmap(orig_src_pte);
 	add_mm_rss_vec(dst_mm, rss);
@@ -3264,32 +3250,12 @@ static void lru_gen_exit_fault(void)
 {
 	current->in_lru_fault = false;
 }
-
-static void lru_gen_swap_refault(struct page *page, swp_entry_t entry)
-{
-	void *item;
-	struct address_space *mapping = swap_address_space(entry);
-	pgoff_t index = swp_offset(entry);
-
-	if (!lru_gen_enabled())
-		return;
-
-	rcu_read_lock();
-	item = radix_tree_lookup(&mapping->i_pages, index);
-	rcu_read_unlock();
-	if (radix_tree_exceptional_entry(item))
-		lru_gen_refault(page, item);
-}
 #else
 static void lru_gen_enter_fault(struct vm_area_struct *vma)
 {
 }
 
 static void lru_gen_exit_fault(void)
-{
-}
-
-static void lru_gen_swap_refault(struct page *page, swp_entry_t entry)
 {
 }
 #endif /* CONFIG_LRU_GEN */
@@ -3380,7 +3346,6 @@ vm_fault_t do_swap_page(struct vm_fault *vmf)
 				__SetPageLocked(page);
 				__SetPageSwapBacked(page);
 				set_page_private(page, entry.val);
-				lru_gen_swap_refault(page, entry);
 				lru_cache_add_anon(page);
 				swap_readpage(page, true);
 			}
@@ -3563,7 +3528,6 @@ out_release:
 	}
 	return ret;
 }
-EXPORT_SYMBOL(do_swap_page);
 
 /*
  * We enter with non-exclusive mmap_sem (to exclude vma changes,
@@ -4863,9 +4827,7 @@ int __handle_speculative_fault(struct mm_struct *mm, unsigned long address,
 	}
 
 	mem_cgroup_enter_user_fault();
-	lru_gen_enter_fault(vmf.vma);
 	ret = handle_pte_fault(&vmf);
-	lru_gen_exit_fault();
 	mem_cgroup_exit_user_fault();
 
 	/*
