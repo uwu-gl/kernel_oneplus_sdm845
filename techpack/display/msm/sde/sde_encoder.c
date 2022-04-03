@@ -4596,7 +4596,7 @@ void sde_encoder_trigger_kickoff_pending(struct drm_encoder *drm_enc)
 	sde_enc->idle_pc_restore = false;
 }
 
-extern bool sde_crtc_get_fingerprint_mode(struct drm_crtc_state *crtc_state);
+extern bool sde_crtc_get_dimlayer_mode(struct drm_crtc_state *crtc_state);
 static bool
 _sde_encoder_setup_dither_for_onscreenfingerprint(struct sde_encoder_phys *phys,
 						  void *dither_cfg, int len)
@@ -4607,7 +4607,7 @@ _sde_encoder_setup_dither_for_onscreenfingerprint(struct sde_encoder_phys *phys,
 	if (!drm_enc || !drm_enc->crtc)
 		return -EFAULT;
 
-	if (!sde_crtc_get_fingerprint_mode(drm_enc->crtc->state))
+	if (!sde_crtc_get_dimlayer_mode(drm_enc->crtc->state))
 		return -EINVAL;
 
 	if (len != sizeof(dither))
@@ -5029,155 +5029,7 @@ void sde_encoder_needs_hw_reset(struct drm_encoder *drm_enc)
 	}
 }
 
-#ifdef OPLUS_BUG_STABILITY
-u32 g_new_bk_level = 0;
-u32 g_oplus_save_pcc = 0;
-
-enum oplus_sync_method {
-	OPLUS_PREPARE_KICKOFF_METHOD = 0,
-	OPLUS_KICKOFF_METHOD,
-	OPLUS_POST_KICKOFF_METHOD,
-	OPLUS_WAIT_VSYNC_METHOD,
-	OPLUS_UNKNOW_METHOD,
-};
-
-int get_current_display_framerate(struct drm_connector *connector)
-{
-	struct sde_connector *c_conn = to_sde_connector(connector);
-	struct dsi_display *dsi_display = NULL;
-	int framerate = 0;
-
-	dsi_display = c_conn->display;
-
-	if (!dsi_display || !dsi_display->panel || !dsi_display->panel->cur_mode) {
-		SDE_ERROR("Invalid params(s) dsi_display %pK, panel %pK\n",
-			dsi_display,
-			((dsi_display) ? dsi_display->panel : NULL));
-		return -EINVAL;
-	}
-
-	framerate = dsi_display->panel->cur_mode->timing.refresh_rate;
-
-	return framerate;
-}
-
-int get_current_display_brightness(struct drm_connector *connector)
-{
-	struct sde_connector *c_conn = to_sde_connector(connector);
-	struct dsi_display *dsi_display = NULL;
-	int brightness_level = 0;
-
-	dsi_display = c_conn->display;
-
-	if (!dsi_display || !dsi_display->panel || !dsi_display->panel->cur_mode) {
-		SDE_ERROR("Invalid params(s) dsi_display %pK, panel %pK\n",
-			dsi_display,
-			((dsi_display) ? dsi_display->panel : NULL));
-		return -EINVAL;
-	}
-
-	brightness_level = dsi_display->panel->bl_config.bl_level;
-
-	return brightness_level;
-}
-
-static bool is_support_panel(struct drm_connector *connector)
-{
-	struct sde_connector *c_conn = to_sde_connector(connector);
-	struct dsi_display *dsi_display = NULL;
-
-	dsi_display = c_conn->display;
-
-	if(c_conn->connector_type == DRM_MODE_CONNECTOR_DSI) {
-		if (!dsi_display || !dsi_display->panel || !dsi_display->panel->oplus_priv.vendor_name) {
-			SDE_ERROR("Invalid params(s) dsi_display %pK, panel %pK\n",
-				dsi_display,
-				((dsi_display) ? dsi_display->panel : NULL));
-			return -EINVAL;
-		}
-		return is_support_panel_backlight_smooths(dsi_display->panel->oplus_priv.vendor_name);
-	} else {
-		return false;
-	}
-}
-
-bool is_spread_backlight(int level)
-{
-	if((level <= 200)&&(level >= 2))
-		return true;
-	else
-		return false;
-}
-
-int oplus_backlight_wait_vsync(struct drm_encoder *drm_enc)
-{
-	SDE_ATRACE_BEGIN("wait_vsync");
-
-	if (!drm_enc || !drm_enc->crtc ) {
-		SDE_ERROR("%s encoder is disabled", __func__);
-		return -ENOLINK;
-	}
-
-	if (sde_encoder_is_disabled(drm_enc)) {
-		SDE_ERROR("%s encoder is disabled", __func__);
-		return -EIO;
-	}
-
-	//mutex_unlock(&panel->panel_lock);
-	sde_encoder_wait_for_event(drm_enc,  MSM_ENC_VBLANK);
-	//mutex_lock(&panel->panel_lock);
-	SDE_ATRACE_END("wait_vsync");
-
-	return 0;
-}
-
-int oplus_sync_panel_brightness(enum oplus_sync_method method, void *phys_enc)
-{
-	struct sde_encoder_phys *phys_encoder = phys_enc;
-	struct sde_connector *c_conn = NULL;
-	struct dsi_display *display = NULL;
-	int rc = 0;
-
-	if (phys_encoder == NULL)
-		return -EFAULT;
-	if (phys_encoder->connector == NULL)
-		return -EFAULT;
-
-	c_conn = to_sde_connector(phys_encoder->connector);
-	if (c_conn == NULL)
-		return -EFAULT;
-
-	if (c_conn->connector_type != DRM_MODE_CONNECTOR_DSI)
-		return 0;
-
-	display = c_conn->display;
-	if (display == NULL)
-		return -EFAULT;
-
-	pr_debug("backlight smooth for global_bl_level = %d,g_oplus_save_pcc = %d, sync_method = %d\n",g_new_bk_level, g_oplus_save_pcc,method);
-
-	SDE_ATRACE_BEGIN("sync_panel_brightness");
-		if (method == OPLUS_PREPARE_KICKOFF_METHOD) {
-			rc = c_conn->ops.set_backlight(&c_conn->base,
-					display, g_new_bk_level);
-			c_conn->unset_bl_level = 0;
-			usleep_range(100, 200);
-		} else if(method == OPLUS_POST_KICKOFF_METHOD) {
-			usleep_range(4000, 4100);
-			rc = c_conn->ops.set_backlight(&c_conn->base,
-					display, g_new_bk_level);
-			c_conn->unset_bl_level = 0;
-		} else {
-			oplus_backlight_wait_vsync(c_conn->encoder);
-			rc = c_conn->ops.set_backlight(&c_conn->base,
-					display, g_new_bk_level);
-			c_conn->unset_bl_level = 0;
-		}
-		SDE_ATRACE_END("sync_panel_brightness");
-	return rc;
-}
-#endif
-
+extern int sde_connector_update_backlight(struct drm_connector *conn);
 int sde_encoder_prepare_for_kickoff(struct drm_encoder *drm_enc,
 		struct sde_encoder_kickoff_params *params)
 {
@@ -5255,6 +5107,9 @@ int sde_encoder_prepare_for_kickoff(struct drm_encoder *drm_enc,
 			CONNECTOR_PROP_CMD_FRAME_TRIGGER_MODE);
 
 	_sde_encoder_helper_hdr_plus_mempool_update(sde_enc);
+
+	if (sde_enc->cur_master)
+		sde_connector_update_backlight(sde_enc->cur_master->connector);
 
 	/* prepare for next kickoff, may include waiting on previous kickoff */
 	SDE_ATRACE_BEGIN("sde_encoder_prepare_for_kickoff");
