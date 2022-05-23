@@ -275,7 +275,7 @@
 &lab {
 	regulator-min-microvolt = <4600000>;
 	regulator-max-microvolt = <6000000>;
-	regulator-over-current-protection;
+	// regulator-over-current-protection;
 	regulator-pull-down;
 	regulator-soft-start;
 };
