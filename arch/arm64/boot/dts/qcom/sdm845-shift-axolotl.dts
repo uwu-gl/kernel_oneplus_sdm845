@@ -473,6 +473,7 @@
 		compatible = "nxp,tfa9890";
 		reg = <0x34>;
 		vddd-supply = <&vreg_s4a_1p8>;
+		sound-name-prefix = "Speaker";
 		#sound-dai-cells = <0>;
 	};
 };
@@ -646,6 +647,18 @@
 	dai@2 {
 		reg = <2>;
 	};
+
+	dai@3 {
+		reg = <3>;
+	};
+
+	dai@4 {
+		reg = <4>;
+	};
+
+	dai@5 {
+		reg = <5>;
+	};
 };
 
 &qup_uart9_rx {
@@ -680,7 +693,13 @@
 	audio-routing = "RX_BIAS", "MCLK",
 			"AMIC1", "MIC BIAS1",
 			"AMIC2", "MIC BIAS2",
-			"AMIC3", "MIC BIAS3";
+			"AMIC3", "MIC BIAS3",
+			"MM_DL1",  "MultiMedia1 Playback",
+			"MM_DL3",  "MultiMedia3 Playback",
+			"MM_DL5",  "MultiMedia5 Playback",
+			"MultiMedia2 Capture", "MM_UL2",
+			"MultiMedia4 Capture", "MM_UL4",
+			"MultiMedia6 Capture", "MM_UL6";
 
 	mm1-dai-link {
 		link-name = "MultiMedia1";
@@ -703,10 +722,31 @@
 		};
 	};
 
+	mm4-dai-link {
+		link-name = "MultiMedia4";
+		cpu {
+			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA4>;
+		};
+	};
+
+	mm5-dai-link {
+		link-name = "MultiMedia5";
+		cpu {
+			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA5>;
+		};
+	};
+
+	mm6-dai-link {
+		link-name = "MultiMedia6";
+		cpu {
+			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA6>;
+		};
+	};
+
 	speaker-dai-link {
 		link-name = "Speaker Playback";
 		codec {
-			sound-dai = <&tfa9890_codec 0>;
+			sound-dai = <&tfa9890_codec>;
 		};
 
 		cpu {
@@ -718,10 +758,25 @@
 		};
 	};
 
-	slim-dai-link {
-		link-name = "SLIM Playback";
+	slimcap-wcd-dai-link {
+		link-name = "SLIM WCD Capture 1";
 		codec {
-			sound-dai = <&wcd9340 0>;
+			sound-dai = <&wcd9340 1>; /* AIF1_CAP */
+		};
+
+		cpu {
+			sound-dai = <&q6afedai SLIMBUS_1_TX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+	};
+
+	slim-dai-link {
+		link-name = "SLIM WCD Playback 1";
+		codec {
+			sound-dai = <&wcd9340 0>; /* AIF1_PB */
 		};
 
 		cpu {
@@ -734,13 +789,43 @@
 	};
 
 	slimcap-dai-link {
-		link-name = "SLIM Capture";
+		link-name = "SLIM WCD Capture 2";
 		codec {
-			sound-dai = <&wcd9340 1>;
+			sound-dai = <&wcd9340 3>; /* AIF2_CAP */
 		};
 
 		cpu {
 			sound-dai = <&q6afedai SLIMBUS_0_TX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+	};
+
+	slim-wcd-dai-link {
+		link-name = "SLIM WCD Playback 2";
+		codec {
+			sound-dai = <&wcd9340 2>; /* AIF2_PB */
+		};
+
+		cpu {
+			sound-dai = <&q6afedai SLIMBUS_1_RX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+	};
+
+	slimcap2-wcd-dai-link {
+		link-name = "SLIM WCD Capture 3";
+		codec {
+			sound-dai = <&wcd9340 5>; /* AIF3_CAP */
+		};
+
+		cpu {
+			sound-dai = <&q6afedai SLIMBUS_2_TX>;
 		};
 
 		platform {
