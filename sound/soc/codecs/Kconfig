@@ -255,6 +255,7 @@ config SND_SOC_ALL_CODECS
 	imply SND_SOC_TAS5720
 	imply SND_SOC_TAS6424
 	imply SND_SOC_TDA7419
+	imply SND_SOC_TFA98xx
 	imply SND_SOC_TFA9879
 	imply SND_SOC_TFA989X
 	imply SND_SOC_TLV320ADC3XXX
@@ -1943,6 +1944,14 @@ config SND_SOC_TDA7419
 	tristate "ST TDA7419 audio processor"
 	depends on I2C
 	select REGMAP_I2C
+
+config SND_SOC_TFA98XX
+	tristate "NXP/Goodix TFA98XX"
+	depends on I2C
+	select REGMAP_I2C
+	help
+	  Enable support for NXP (now Goodix) TFA98XX speaker amplifiers, e.g. TFA98XX.
+	  Downstream driver, needs rewrite and upstreaming to mainline.
 
 config SND_SOC_TFA9879
 	tristate "NXP Semiconductors TFA9879 amplifier"
