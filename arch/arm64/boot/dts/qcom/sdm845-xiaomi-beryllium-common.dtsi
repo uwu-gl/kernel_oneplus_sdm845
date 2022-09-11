@@ -440,6 +440,10 @@
 	dai@2 {
 		reg = <2>;
 	};
+
+	dai@3 {
+		reg = <3>;
+	};
 };
 
 &pmi8998_haptics {
@@ -495,21 +499,28 @@
 	mm1-dai-link {
 		link-name = "MultiMedia1";
 		cpu {
-			sound-dai = <&q6asmdai  MSM_FRONTEND_DAI_MULTIMEDIA1>;
+			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA1>;
 		};
 	};
 
 	mm2-dai-link {
 		link-name = "MultiMedia2";
 		cpu {
-			sound-dai = <&q6asmdai  MSM_FRONTEND_DAI_MULTIMEDIA2>;
+			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA2>;
 		};
 	};
 
 	mm3-dai-link {
 		link-name = "MultiMedia3";
 		cpu {
-			sound-dai = <&q6asmdai  MSM_FRONTEND_DAI_MULTIMEDIA3>;
+			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA3>;
+		};
+	};
+
+	mm4-dai-link {
+		link-name = "MultiMedia4";
+		cpu {
+			sound-dai = <&q6asmdai MSM_FRONTEND_DAI_MULTIMEDIA4>;
 		};
 	};
 
@@ -551,7 +562,7 @@
 	};
 
 	slimcap-dai-link {
-		link-name = "SLIM Capture";
+		link-name = "SLIM WCD Capture";
 		cpu {
 			sound-dai = <&q6afedai SLIMBUS_0_TX>;
 		};
@@ -561,7 +572,22 @@
 		};
 
 		codec {
-			sound-dai = <&wcd9340 1>;
+			sound-dai = <&wcd9340 1>; /* AIF1_CAP */
+		};
+	};
+
+	slimcap2-dai-link {
+		link-name = "SLIM WCD Capture 2";
+		cpu {
+			sound-dai = <&q6afedai SLIMBUS_1_TX>;
+		};
+
+		platform {
+			sound-dai = <&q6routing>;
+		};
+
+		codec {
+			sound-dai = <&wcd9340 3>; /* AIF2_CAP */
 		};
 	};
 };
