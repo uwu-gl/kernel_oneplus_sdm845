@@ -418,6 +418,16 @@ config DRM_PANEL_NOVATEK_NT35560
 	  mode. This supports several panels such as Sony ACX424AKM and
 	  ACX424AKP.
 
+config DRM_PANEL_NOVATEK_NT35596S
+	tristate "Novatek NT35596S DSI panel"
+	depends on OF
+	depends on DRM_MIPI_DSI
+	depends on BACKLIGHT_CLASS_DEVICE
+	help
+	  Say Y here if you want to enable support for the panels built
+	  around the Novatek NT35596S display controller, such as some
+	  JDI panels used in a few Xiaomi Mi Mix 2S mobile phones.
+
 config DRM_PANEL_NOVATEK_NT35950
 	tristate "Novatek NT35950 DSI panel"
 	depends on OF
