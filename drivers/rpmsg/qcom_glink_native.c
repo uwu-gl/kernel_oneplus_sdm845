@@ -944,6 +944,9 @@ static int qcom_glink_rx_data(struct qcom_glink *glink, size_t avail)
 		channel->buf = NULL;
 
 		qcom_glink_rx_done(glink, channel, intent);
+
+		if (channel->ept.rpdev)
+			pm_wakeup_ws_event(channel->ept.rpdev->dev.power.wakeup, 0, true);
 	}
 
 advance_rx:
@@ -1577,6 +1580,17 @@ static int qcom_glink_rx_open(struct qcom_glink *glink, unsigned int rcid,
 		ret = rpmsg_register_device(rpdev);
 		if (ret)
 			goto rcid_remove;
+
+		/*
+		 * Declare all channels as wakeup capable, but don't enable
+		 * waking up by default.
+		 *
+		 * Userspace may wish to be woken up for incoming messages on a
+		 * specific channel, for example to handle incoming calls or SMS
+		 * messages on the IPCRTR channel. This can be done be enabling
+		 * the wakeup source via sysfs.
+		 */
+		device_set_wakeup_capable(&rpdev->dev, true);
 
 		channel->rpdev = rpdev;
 	}
