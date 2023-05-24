@@ -532,6 +532,12 @@
 	status = "okay";
 };
 
+&pmi8998_haptics {
+	status = "okay";
+
+	qcom,wave-play-rate-us = <4255>;
+};
+
 &pm8998_resin {
 	linux,code = <KEY_VOLUMEDOWN>;
 	status = "okay";
