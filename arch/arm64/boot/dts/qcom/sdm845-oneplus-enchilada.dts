@@ -70,6 +70,11 @@
 	};
 };
 
+&rmi4_f12 {
+	touchscreen-y-mm = <144>;
+	syna,clip-y-high = <2279>;
+};
+
 &wcd9340 {
 	qcom,micbias1-microvolt = <1800000>;
 	qcom,micbias2-microvolt = <2700000>;
