@@ -424,6 +424,8 @@
 		syna,reset-delay-ms = <200>;
 		syna,startup-delay-ms = <200>;
 
+		syna,pdt-fallback-desc = [34 41 01 01 12 01];
+
 		rmi4-f01@1 {
 			reg = <0x01>;
 			syna,nosleep-mode = <1>;
