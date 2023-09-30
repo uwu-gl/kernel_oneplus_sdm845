@@ -49,6 +49,16 @@ properties:
     description:
       Delay to wait after powering on the device.
 
+  syna,pdt-fallback-desc:
+    $ref: /schemas/types.yaml#/definitions/uint8-array
+    description:
+      An array of pairs of function number and version. These are used
+      on some devices with replacement displays that use unofficial touch
+      controllers. These controllers do report the properties of their PDT
+      entries, but leave the function_number and function_version registers
+      blank. These values should match exactly the 5th and 4th bytes of each
+      PDT entry from the original display's touch controller.
+
   vdd-supply: true
   vio-supply: true
 
