@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/regulator/samsung,s2dos05.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+
+title: Samsung s2dos05 regulator
+
+maintainers:
+  - Dzmitry Sankouski <dsankouski@gmail.com>
+
+description: |
+  The S2DOS05 is a companion power management IC for the smart phones.
+  Has 4 LDO and 1 BUCK regulators, and has capability to measure
+  current and power. Can detect short circuit on outputs.
+
+properties:
+  compatible:
+    const: samsung,s2dos05
+  reg:
+    maxItems: 1
+
+  regulators:
+    type: object
+    description: List of regulators and its properties
+
+    patternProperties:
+      "^s2dos05-buck1|s2dos05-ldo[1-4]$":
+        type: object
+        $ref: "regulator.yaml#"
+        unevaluatedProperties: false
+
+    additionalProperties: false
+
+required:
+  - compatible
+  - reg
+  - regulators
+
+additionalProperties: false
+
+examples:
+  - |
+    regulator@60 {
+    	compatible = "samsung,s2dos05";
+    	reg = <0x60>;
+    	pinctrl-names = "default";
+    	pinctrl-0 = <&s2dos05_irq>;
+    	s2dos05,s2dos05_int = <&tlmm 0x31 0x0>;
+
+    	regulators {
+    		s2dos05_ldo1: s2dos05-ldo1 {
+    			regulator-name = "s2dos05-ldo1";
+    			regulator-min-microvolt = <1500000>;
+    			regulator-max-microvolt = <2000000>;
+    			regulator-active-discharge = <0x1>;
+    		};
+
+    		s2dos05_ldo2: s2dos05-ldo2 {
+    			regulator-name = "s2dos05-ldo2";
+    			regulator-min-microvolt = <1800000>;
+    			regulator-max-microvolt = <1800000>;
+    			regulator-active-discharge = <0x1>;
+    			regulator-boot-on;
+    		};
+
+    		s2dos05_ldo3: s2dos05-ldo3 {
+    			regulator-name = "s2dos05-ldo3";
+    			regulator-min-microvolt = <3000000>;
+    			regulator-max-microvolt = <3000000>;
+    			regulator-active-discharge = <0x1>;
+    			regulator-boot-on;
+    		};
+
+    		s2dos05_ldo4: s2dos05-ldo4 {
+    			regulator-name = "s2dos05-ldo4";
+    			regulator-min-microvolt = <2700000>;
+    			regulator-max-microvolt = <3775000>;
+    			regulator-active-discharge = <0x1>;
+    		};
+
+    		s2dos05_buck1: s2dos05-buck1 {
+    			regulator-name = "s2dos05-buck1";
+    			regulator-min-microvolt = <850000>;
+    			regulator-max-microvolt = <2100000>;
+    			regulator-active-discharge = <0x1>;
+    		};
+    	};
+    };
