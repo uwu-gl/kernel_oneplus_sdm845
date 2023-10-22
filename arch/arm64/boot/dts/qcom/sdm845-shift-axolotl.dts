@@ -501,7 +501,7 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		reset-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&tlmm 6 GPIO_ACTIVE_LOW>;
 
 		pinctrl-names = "default", "sleep";
 		pinctrl-0 = <&sde_dsi_active &sde_te_active>;
