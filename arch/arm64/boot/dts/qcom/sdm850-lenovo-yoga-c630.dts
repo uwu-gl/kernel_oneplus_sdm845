@@ -37,6 +37,10 @@
 		serial1 = &uart6;
 	};
 
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
 	gpio-keys {
 		compatible = "gpio-keys";
 

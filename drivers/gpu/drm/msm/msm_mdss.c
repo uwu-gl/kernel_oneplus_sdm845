@@ -384,6 +384,8 @@ static int msm_mdss_reset(struct device *dev)
 				     "failed to acquire mdss reset\n");
 	}
 
+	dev_info(dev, "toggle reset\n");
+
 	reset_control_assert(reset);
 	/*
 	 * Tests indicate that reset has to be held for some period of time,

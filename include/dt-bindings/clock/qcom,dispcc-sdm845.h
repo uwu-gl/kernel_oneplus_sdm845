@@ -49,6 +49,7 @@
 
 /* DISP_CC Reset */
 #define DISP_CC_MDSS_RSCC_BCR					0
+#define DISP_CC_MDSS_CORE_BCR					1
 
 /* DISP_CC GDSCR */
 #define MDSS_GDSC						0
