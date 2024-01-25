@@ -1775,8 +1775,8 @@ static int wsa884x_set_stream(struct snd_soc_dai *dai,
 	struct sdw_slave *sdw = dev_to_sdw_dev(dai->dev);
 
 	/* Check if this belongs to same bus */
-	if (sdw->bus->dev != sruntime->dev)
-		return 0;
+	// if (sdw->bus->dev != sruntime->dev)
+	// 	return 0;
 
 	wsa884x->sruntime = stream;
 
