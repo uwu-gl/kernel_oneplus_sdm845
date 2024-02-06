@@ -21,7 +21,7 @@ if [ ! -d "out" ]; then
 fi
 
 echo "[ i ]  Making kernel config..."
-make ARCH=arm64 O=out CC="ccache clang" sdm845-perf_ksu_defconfig
+make ARCH=arm64 O=out CC="ccache clang" sdm845-perf_defconfig
 # make ARCH=arm64 O=out CC=clang oldconfig
 
 echo "[ i ]  Making kernel...(This may take long time)"
