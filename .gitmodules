@@ -1,0 +1,4 @@
+[submodule "techpack/audio"]
+	path = techpack/audio
+	url = https://github.com/OnePlusOSS/android_kernel_oneplus_sdm845_techpack_audio.git
+	branch = oneplus/SDM845_R_11.0
