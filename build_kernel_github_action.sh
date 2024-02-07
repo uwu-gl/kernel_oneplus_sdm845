@@ -6,13 +6,20 @@ cd $GITHUB_WORKSPACE/android-kernel
 echo "[ i ]  Setting up PATH..."
 export PATH=~/toolchains/clang/bin/:$PATH
 export CC=clang
-export CLANG_TRIPLE=aarch64-linux-gnu-
-export CROSS_COMPILE=aarch64-linux-gnu-
-export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+CLANG=~/toolchains/clang/bin
+GCC32=~/toolchains/arm-linux-androideabi-4.9/bin
+GCC64=~/toolchains/aarch64-linux-android-4.9/bin
+PATH=$CLANG:$GCC64:$GCC32:$PATH
+export PATH
+export ARCH=arm64
+export CLANG_TRIPLE=aarch64-linux-gnu
+export CROSS_COMPILE=aarch64-linux-android-
+export CROSS_COMPILE_ARM32=arm-linux-androideabi-
 # export CONFIG_BUILD_ARM64_DT_OVERLAY=y
 chmod +x ~/toolchains/dtc/dtc
 DTC_EXT=~/toolchains/dtc/dtc
 export DTC_EXT=~/toolchains/dtc/dtc
+# To-Do: add dtc to kernel source
 
 echo "[ i ]  Setting up ARCH..."
 export ARCH=arm64
