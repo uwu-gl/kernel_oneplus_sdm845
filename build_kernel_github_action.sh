@@ -35,7 +35,7 @@ make ARCH=arm64 O=out CC="ccache clang" sdm845-perf_defconfig
 # make ARCH=arm64 O=out CC=clang oldconfig
 
 echo "[ i ]  Making kernel...(This may take long time)"
-make ARCH=arm64 O=out CC=clang -j$(nproc --all) 2>&1 | tee kernel_log-${start_time}.txt
+make ARCH=arm64 O=out LD=ld.lld CC=clang -j$(nproc --all) 2>&1 | tee kernel_log-${start_time}.txt
 
 
 if [ -f out/arch/arm64/boot/Image.gz-dtb ]; then
