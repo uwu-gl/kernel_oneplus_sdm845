@@ -34,8 +34,9 @@ Already supported KernelSU, LXC, docker.
 2. Start building!  
     Build defconfig:  
       `make ARCH=arm64 O=out CC="ccache clang" sdm845-perf_defconfig`  
-    Build kernel:
-      `make ARCH=arm64 O=out CC=clang -j$(nproc --all) 2>&1 | tee kernel_log.txt`
+    Build kernel:  
+      `make ARCH=arm64 O=out CC=clang -j$(nproc --all) 2>&1 | tee kernel_log.txt`  
    The build target will in: {out/arch/arm64/boot/Image.gz-dtb}
+  
 # Face any problems?
 Upload log in your source to issue page, and someone(me?) will give you help.
