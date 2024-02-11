@@ -43,7 +43,6 @@ else
 	TIMESTAMP=$KBUILD_BUILD_TIMESTAMP
 fi
 if test -z "$KBUILD_BUILD_USER"; then
-<<<<<<< HEAD
 	LINUX_COMPILE_BY=$(whoami | sed 's/\\/\\\\/')
 else
 	LINUX_COMPILE_BY=$KBUILD_BUILD_USER

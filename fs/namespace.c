@@ -1163,9 +1163,7 @@ static void delayed_mntput(struct work_struct *unused)
 }
 static DECLARE_DELAYED_WORK(delayed_mntput_work, delayed_mntput);
 
-<<<<<<< HEAD
 static void mntput_no_expire(struct mount *mnt)
-=======
 void flush_delayed_mntput_wait(void)
 {
 	delayed_mntput(NULL);
@@ -1173,7 +1171,6 @@ void flush_delayed_mntput_wait(void)
 }
 
 void mntput_no_expire(struct mount *mnt)
->>>>>>> 6ff267202f77 (init KernelSU)
 {
 	rcu_read_lock();
 	if (likely(READ_ONCE(mnt->mnt_ns))) {
