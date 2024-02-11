@@ -5,3 +5,6 @@
 [submodule "dtc"]
 	path = dtc
 	url = https://github.com/Grill-Laux/android_prebuilts_misc_linux-x86_dtc_dtc
+[submodule "KernelSU"]
+	path = KernelSU
+	url = https://github.com/bot-wxt1221/KernelSU
