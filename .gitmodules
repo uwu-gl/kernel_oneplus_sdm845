@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [submodule "techpack/audio"]
 	path = techpack/audio
 	url = https://github.com/OnePlusOSS/android_kernel_oneplus_sdm845_techpack_audio.git
@@ -7,4 +8,4 @@
 	url = https://github.com/Grill-Laux/android_prebuilts_misc_linux-x86_dtc_dtc
 [submodule "KernelSU"]
 	path = KernelSU
-	url = https://github.com/bot-wxt1221/KernelSU
+	url = git@github.com:Bot-wxt1221/KernelSU.git
