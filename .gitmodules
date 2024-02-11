@@ -2,3 +2,6 @@
 	path = techpack/audio
 	url = https://github.com/OnePlusOSS/android_kernel_oneplus_sdm845_techpack_audio.git
 	branch = oneplus/SDM845_R_11.0
+[submodule "dtc"]
+	path = dtc
+	url = https://github.com/Grill-Laux/android_prebuilts_misc_linux-x86_dtc_dtc
