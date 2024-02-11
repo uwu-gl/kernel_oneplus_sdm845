@@ -2,7 +2,6 @@
 
 echo "[ i ]  Parparing Environment..."
 cd $GITHUB_WORKSPACE/android-kernel
-# 交叉编译器路径
 echo "[ i ]  Setting up PATH..."
 export PATH=~/toolchains/clang/bin/:$PATH
 export CC=clang
@@ -15,16 +14,11 @@ export ARCH=arm64
 export CLANG_TRIPLE=aarch64-linux-gnu
 export CROSS_COMPILE=aarch64-linux-android-
 export CROSS_COMPILE_ARM32=arm-linux-androideabi-
-# export CONFIG_BUILD_ARM64_DT_OVERLAY=y
-chmod +x ~/toolchains/dtc/dtc
-DTC_EXT=~/toolchains/dtc/dtc
-export DTC_EXT=~/toolchains/dtc/dtc
-# To-Do: add dtc to kernel source
-
+chmod +x dtc/dtc
+export DTC_EXT=dtc/dtc
 echo "[ i ]  Setting up ARCH..."
 export ARCH=arm64
 export SUBARCH=arm64
-# export DTC_EXT=dtc
 
 if [ ! -d "out" ]; then
 	mkdir out
@@ -35,7 +29,7 @@ make ARCH=arm64 O=out CC="ccache clang" sdm845-perf_defconfig
 # make ARCH=arm64 O=out CC=clang oldconfig
 
 echo "[ i ]  Making kernel...(This may take long time)"
-make ARCH=arm64 O=out CC=clang -j$(nproc --all) 2>&1 | tee kernel_log-${start_time}.txt
+make ARCH=arm64 O=out CC=clang -j$(nproc --all) 2>&1 | tee kernel_build_log.txt
 
 
 if [ -f out/arch/arm64/boot/Image.gz-dtb ]; then
