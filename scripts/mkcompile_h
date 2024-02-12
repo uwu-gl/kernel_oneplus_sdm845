@@ -52,8 +52,6 @@ if test -z "$KBUILD_BUILD_HOST"; then
 else
 	LINUX_COMPILE_HOST=$KBUILD_BUILD_HOST
 	LINUX_COMPILE_BY='scuwu'
-else
-	LINUX_COMPILE_BY='scuwu'
 fi
 if test -z "$KBUILD_BUILD_HOST"; then
 	LINUX_COMPILE_HOST='scuwu'
