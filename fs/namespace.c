@@ -1163,13 +1163,12 @@ static void delayed_mntput(struct work_struct *unused)
 }
 static DECLARE_DELAYED_WORK(delayed_mntput_work, delayed_mntput);
 
-static void mntput_no_expire(struct mount *mnt)
 void flush_delayed_mntput_wait(void)
 {
 	delayed_mntput(NULL);
 	flush_delayed_work(&delayed_mntput_work);
 }
-
+	
 void mntput_no_expire(struct mount *mnt)
 {
 	rcu_read_lock();
