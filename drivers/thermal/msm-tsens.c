@@ -25,6 +25,8 @@
 
 LIST_HEAD(tsens_device_list);
 
+extern void ht_register_thermal_zone_device(struct thermal_zone_device *tzd);
+
 static int tsens_get_temp(void *data, int *temp)
 {
 	struct tsens_sensor *s = data;
