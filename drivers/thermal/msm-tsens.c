@@ -22,6 +22,7 @@
 #include <linux/thermal.h>
 #include "tsens.h"
 #include "qcom/qti_virtual_sensor.h"
+#include "../drivers/oneplus/coretech/houston/houston.h"
 
 LIST_HEAD(tsens_device_list);
 
