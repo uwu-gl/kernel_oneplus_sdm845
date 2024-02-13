@@ -1,3 +1,5 @@
+#include <linux/thermal.h>
+
 #ifndef __INCLUDE_HOUSTON__
 #define __INCLUDE_HOUSTON__
 
@@ -78,7 +80,7 @@ struct ai_parcel {
 	u64 notify_start_ts_us;
 	u64 notify_end_ts_us;
 	u64 utils[8];
-	u32 skin_temp;
+	u32 skin_temp;/drivers/oneplus/coretech/houston/houston.h
 #ifdef CONFIG_CONTROL_CENTER
 	struct cc_boost_ts cbt[CC_BOOST_TS_SIZE];
 #endif
@@ -86,5 +88,6 @@ struct ai_parcel {
 };
 
 extern int ohm_get_cur_cpuload(bool ctrl);
+extern void ht_register_thermal_zone_device(struct thermal_zone_device *tzd);
 
 #endif
