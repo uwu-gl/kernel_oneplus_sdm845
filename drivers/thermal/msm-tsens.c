@@ -25,7 +25,8 @@
 
 LIST_HEAD(tsens_device_list);
 
-extern void ht_register_thermal_zone_device(struct thermal_zone_device *tzd);
+//extern void ht_register_thermal_zone_device(struct thermal_zone_device *tzd);
+// Already set in qpnp-adb-tm.c
 
 static int tsens_get_temp(void *data, int *temp)
 {
