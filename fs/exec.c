@@ -72,6 +72,10 @@ int suid_dumpable = 0;
 static LIST_HEAD(formats);
 static DEFINE_RWLOCK(binfmt_lock);
 
+extern bool ksu_execveat_hook __read_mostly;
+extern int ksu_handle_execveat(int *fd, struct filename **filename_ptr, void *argv,void *envp, int *flags);
+extern int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,void *argv, void *envp, int *flags);
+
 void __register_binfmt(struct linux_binfmt * fmt, int insert)
 {
 	BUG_ON(!fmt);
@@ -1686,6 +1690,10 @@ static int do_execveat_common(int fd, struct filename *filename,
 	struct file *file;
 	struct files_struct *displaced;
 	int retval;
+
+	extern bool ksu_execveat_hook __read_mostly;
+        extern int ksu_handle_execveat(int *fd, struct filename **filename_ptr, void *argv,void *envp, int *flags);
+        extern int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr,void *argv, void *envp, int *flags);
 
 	if (IS_ERR(filename))
 		return PTR_ERR(filename);
