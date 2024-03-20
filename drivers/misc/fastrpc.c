@@ -2304,13 +2304,16 @@ static int fastrpc_rpmsg_probe(struct rpmsg_device *rpdev)
 
 	rmem_node = of_parse_phandle(rdev->of_node, "memory-region", 0);
 	if (domain_id == SDSP_DOMAIN_ID && rmem_node) {
+		u64 src_perms;
 		rmem = of_reserved_mem_lookup(rmem_node);
 		if (!rmem) {
 			err = -EINVAL;
 			goto fdev_error;
 		}
 
-		qcom_scm_assign_mem(rmem->base, rmem->size, &data->perms,
+		src_perms = BIT(QCOM_SCM_VMID_HLOS);
+
+		qcom_scm_assign_mem(rmem->base, rmem->size, &src_perms,
 				    data->vmperms, data->vmcount);
 
 	}
