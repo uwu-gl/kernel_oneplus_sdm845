@@ -757,3 +757,9 @@
 	qcom,snoc-host-cap-skip-quirk;
 	qcom,ath10k-calibration-variant = "xiaomi_beryllium";
 };
+
+
+&slpi_pas {
+	firmware-name = "qcom/sdm845/beryllium/slpi.mbn";
+        status = "okay";
+};
