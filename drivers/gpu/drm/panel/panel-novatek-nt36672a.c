@@ -630,6 +630,7 @@ static int nt36672a_panel_add(struct nt36672a_panel *pinfo)
 				     "failed to get reset gpio from DT\n");
 
 	drm_panel_init(&pinfo->base, dev, &panel_funcs, DRM_MODE_CONNECTOR_DSI);
+	pinfo->base.prepare_prev_first = true;
 
 	ret = drm_panel_of_backlight(&pinfo->base);
 	if (ret)
