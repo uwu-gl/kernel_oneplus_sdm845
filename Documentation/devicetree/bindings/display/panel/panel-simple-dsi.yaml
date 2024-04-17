@@ -83,8 +83,12 @@ allOf:
     then:
       properties:
         power-supply: false
+        vci-supply: true
+        poc-supply: true
       required:
         - vddio-supply
+        - vci-supply
+        - poc-supply
     else:
       properties:
         vddio-supply: false
