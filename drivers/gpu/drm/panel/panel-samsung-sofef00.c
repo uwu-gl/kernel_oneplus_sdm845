@@ -20,7 +20,8 @@
 struct sofef00_panel {
 	struct drm_panel panel;
 	struct mipi_dsi_device *dsi;
-	struct regulator *supply;
+	bool first_prepare;
+	struct regulator_bulk_data supplies[3];
 	struct gpio_desc *reset_gpio;
 };
 
@@ -110,7 +111,20 @@ static int sofef00_panel_prepare(struct drm_panel *panel)
 	struct device *dev = &ctx->dsi->dev;
 	int ret;
 
-	ret = regulator_enable(ctx->supply);
+	dev_dbg(dev, "%s\n", __func__);
+
+	/*
+	 * On boot the panel has already been initialised, if the regulators are
+	 * already enabled then we can safely assume that the panel is on and we
+	 * can skip the prepare.
+	 */
+	if (regulator_is_enabled(ctx->supplies[0].consumer) && ctx->first_prepare) {
+		ctx->first_prepare = false;
+		dev_dbg(dev, "First prepare!\n");
+		return 0;
+	}
+
+	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 	if (ret < 0) {
 		dev_err(dev, "Failed to enable regulator: %d\n", ret);
 		return ret;
@@ -122,6 +136,7 @@ static int sofef00_panel_prepare(struct drm_panel *panel)
 	if (ret < 0) {
 		dev_err(dev, "Failed to initialize panel: %d\n", ret);
 		gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+		regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 		return ret;
 	}
 
@@ -141,7 +156,7 @@ static int sofef00_panel_disable(struct drm_panel *panel)
 		dev_err(dev, "Failed to un-initialize panel: %d\n", ret);
 
 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-	regulator_disable(ctx->supply);
+	regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 
 	return 0;
 }
@@ -225,10 +240,23 @@ static int sofef00_panel_probe(struct mipi_dsi_device *dsi)
 	if (!ctx)
 		return -ENOMEM;
 
-	ctx->supply = devm_regulator_get(dev, "vddio");
-	if (IS_ERR(ctx->supply))
-		return dev_err_probe(dev, PTR_ERR(ctx->supply),
+	ctx->supplies[0].supply = "vddio";
+	ctx->supplies[1].supply = "vci";
+	ctx->supplies[2].supply = "poc";
+
+	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(ctx->supplies), ctx->supplies);
+	if (ret)
+		return dev_err_probe(dev, ret,
 				     "Failed to get vddio regulator\n");
+
+	/* Regulators are all boot-on, enable them to balance the refcounts so we can disable
+	 * them later in the first prepare() call */
+	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+	if (ret < 0)
+		return dev_err_probe(dev, ret,
+				     "Failed to enable regulators\n");
+
+	ctx->first_prepare = true;
 
 	ctx->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(ctx->reset_gpio))
