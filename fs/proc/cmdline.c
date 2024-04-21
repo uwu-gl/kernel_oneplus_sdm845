@@ -46,7 +46,7 @@ static void proc_command_line_init(void) {
 
 static int cmdline_proc_show(struct seq_file *m, void *v)
 {
-	seq_printf(m, "%s\n", proc_command_line)
+	seq_printf(m, "%s\n", proc_command_line);
 	return 0;
 }
 
@@ -66,11 +66,11 @@ static const struct file_operations cmdline_proc_fops = {
 
 static int __init proc_cmdline_init(void)
 {
-	proc_command_line_init();
 	char *offset_addr, *cmd = new_command_line;
         char *search, *replace;
 	size_t search_len, replace_len;
 
+        proc_command_line_init();
 	strcpy(cmd, saved_command_line);
 
 	search = "skip_initramf";
