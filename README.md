@@ -36,8 +36,8 @@ Already supported KernelSU, LXC, docker.
     ```    
     Second, set dtc:
     ``` 
-      $ chmod +x dtc/dtc  
-      $ export DTC_EXT=dtc/dtc
+    $ chmod +x dtc/dtc  
+    $ export DTC_EXT=dtc/dtc
     ```    
   
 3. Start building!  
