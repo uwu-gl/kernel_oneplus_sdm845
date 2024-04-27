@@ -48,7 +48,7 @@ jobs:
           echo 123 > out/arch/arm64/boot/Image.gz
           echo 123 > out/arch/arm64/boot/Image.gz-dtb
           curl -Lo AnyKernel3.zip https://github.com/Grill-Laux/AnyKernel3/archive/refs/heads/master.zip
-          unzip AnyKernel3.zip
+          unzip AnyKernel3.zip && rm -rf AnyKernel3.zip
           cd AnyKernel3-master
           cat > anykernel.sh <<EOF
           properties() { '
@@ -70,6 +70,6 @@ jobs:
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
-          name: AnyKernel3_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X.zip
+          name: AnyKernel3_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X
           path: ./*.zip
           
