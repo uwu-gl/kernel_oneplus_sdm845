@@ -6,10 +6,13 @@ permissions:
 jobs:
   build-pixelos:
     uses: ./.github/workflows/build_pixelos.yml
+    secrets: inherit
   build-oos:
     uses: ./.github/workflows/build_oos.yml
+    secrets: inherit
   build-los:
     uses: ./.github/workflows/build_los.yml
+    secrets: inherit
   release:
     needs:
       - build-pixelos
