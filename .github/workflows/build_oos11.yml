@@ -64,12 +64,12 @@ jobs:
           EOF
           cp ../out/arch/arm64/boot/Image.gz-dtb .
           zip -r boot.zip * -x .git README.md *placeholder
-          cd ..
+          cp boot ../ && cd .. && ls
           
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
           name: AnyKernel3_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X.zip
-          path: Anykernel3-Master/*.zip
+          path: ./*.zip
           
