@@ -4,10 +4,8 @@ on:
   repository_dispatch: 
     types:
       - push
-    repo: 
-      - Grill-Laux/KernelSU
-    branches:
-      - main
+      - pull request
+    repo: Grill-Laux/KernelSU
 jobs: 
   los-update:
     runs-on: ubuntu-latest
