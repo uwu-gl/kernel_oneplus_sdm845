@@ -1,5 +1,6 @@
 name: Build PixelOS' Kernel
 on: 
+  workflow_call:
   workflow_dispatch:
   push:
     branches: ["pixelos/fourteen-qpr2"]
