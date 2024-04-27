@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: Grill-Laux/kernel_oneplus_sdm845
-          ref: pixelos/fourteen-qpr2
+          ref: pixelos/fourteen
           
       - name: Compile Kernel
         run: |
@@ -43,16 +43,11 @@ jobs:
           
       - name: Make AnyKernel
         run: |
-          mkdir -p out/arch/arm64/boot/
-          echo 123 > out/arch/arm64/boot/Image
-          echo 123 > out/arch/arm64/boot/Image.gz
-          echo 123 > out/arch/arm64/boot/Image.gz-dtb
-          curl -Lo AnyKernel3.zip https://github.com/Grill-Laux/AnyKernel3/archive/refs/heads/master.zip
-          unzip AnyKernel3.zip
-          cp ../out/arch/arm64/boot/Image.gz-dtb AnyKernel3-master
+          git clone https://github.com/Grill-Laux/AnyKernel3 anykernel
+          cp out/arch/arm64/boot/Image.gz-dtb anykernel/
     
       - name: Upload AnyKernel
         uses: actions/upload-artifact@v4
         with:
           name: AnyKernel_PixelOS_${{ env.BUILD_TIME }}_OnePlus-6X
-          path: AnyKernel3-master/*
+          path: anykernel/*
