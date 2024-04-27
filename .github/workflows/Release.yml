@@ -21,12 +21,12 @@ jobs:
         uses: actions/download-artifact@v4
       
       - name: Set up date
-        run: echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+        run: echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV && ls
 
       - name: release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: KernelTarget(${{ env.BUILD_TIME }})
           name: Kernel target release(${{ env.BUILD_TIME }})
-          files: /home/runner/work/kernel_oneplus_sdm845/kernel_oneplus_sdm845/*.zip
+          files: AnyKernel3_*.zip
         
