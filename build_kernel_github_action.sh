@@ -15,6 +15,8 @@ export CROSS_COMPILE_ARM32=arm-linux-androideabi-
 echo "### Setting up ARCH..."
 export ARCH=arm64
 export SUBARCH=arm64
+chmod +x ~/toolchains/dtc/dtc
+export DTC_EXT=~/toolchains/dtc/dtc
 
 if [ ! -d "out" ]; then
 	mkdir out
