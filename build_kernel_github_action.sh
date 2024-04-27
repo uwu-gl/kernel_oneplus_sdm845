@@ -12,8 +12,6 @@ export ARCH=arm64
 export CLANG_TRIPLE=aarch64-linux-gnu
 export CROSS_COMPILE=aarch64-linux-android-
 export CROSS_COMPILE_ARM32=arm-linux-androideabi-
-chmod +x dtc/dtc
-export DTC_EXT=dtc/dtc
 echo "### Setting up ARCH..."
 export ARCH=arm64
 export SUBARCH=arm64
