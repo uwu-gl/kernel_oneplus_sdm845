@@ -62,13 +62,14 @@ jobs:
           split_boot
           flash_boot
           EOF
-          cp $GITHUB_WORKSPACE/android-kernel/out/arch/arm64/boot/Image.gz-dtb .
+          cp ../out/arch/arm64/boot/Image.gz-dtb .
           zip -r boot.zip * -x .git README.md *placeholder
-          ls
+          cd ..
+          
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
           name: AnyKernel3_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X.zip
-          path: anykernel/*
+          path: Anykernel3-Master/*.zip
           
