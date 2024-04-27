@@ -39,7 +39,6 @@ jobs:
           output_dir=out
           make O="$output_dir" enchilada_defconfig
           make -j $(nproc) O="$output_dir" CC=clang
-          popd
           
       - name: Make AnyKernel
         run: |
@@ -70,4 +69,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: AnyKernel_PixelOS_${{ env.BUILD_TIME }}_OnePlus-6X.zip
-          path: ./*.zip
+          path: AnyKernel3-Master/*.zip
