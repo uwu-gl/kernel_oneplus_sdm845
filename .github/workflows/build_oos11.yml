@@ -5,7 +5,7 @@ on:
   push:
     branches: ["oos/11.0"]
 jobs:
-  build:
+  build-oos:
     runs-on: ubuntu-latest
     permissions:
       contents: write
