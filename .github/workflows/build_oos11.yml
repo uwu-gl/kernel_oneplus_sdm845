@@ -49,6 +49,6 @@ jobs:
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
-          name: AnyKernel3_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X
+          name: AnyKernel_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X
           path: anykernel/*
           
