@@ -43,14 +43,12 @@ jobs:
           
       - name: Make AnyKernel3 zip
         run: |
-          mkdir -p out/arch/arm64/boot/
-          curl -Lo AnyKernel3.zip https://github.com/Grill-Laux/AnyKernel3/archive/refs/heads/master.zip
-          unzip AnyKernel3.zip
-          cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3-master  
+          git clone https://github.com/Grill-Laux/AnyKernel3 anykernel
+          cp out/arch/arm64/boot/Image.gz-dtb anykernel
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
           name: AnyKernel3_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X
-          path: AnyKernel3-master/*
+          path: anykernel/*
           
