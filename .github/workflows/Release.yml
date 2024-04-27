@@ -19,8 +19,14 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
-      - name: Prepare zip
-        run: find -type f | awk -F "." '{print $2} xargs -i -t mv ./{}.zip
+      - name: Zip AnyKernel3
+        run: |
+          for dir in AnyKernel3_*; do
+            if [ -d "$dir" ]; then
+              echo "----- Zip $dir -----"
+              (cd $dir && zip -r9 "$dir".zip ./* -x .git .gitignore ./*.zip && mv *.zip ..)
+            fi
+          done
         
       - name: Set up date
         run: echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV && ls
