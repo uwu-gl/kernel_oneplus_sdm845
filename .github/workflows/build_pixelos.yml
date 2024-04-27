@@ -1,0 +1,74 @@
+name: Build PixelOS' Kernel
+on: 
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: ["pixelos/fourteen"]
+jobs: 
+  build-pixelos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps: 
+      - name: Clone Toolchain
+        run: |
+          echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+          sudo apt update -y
+          sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
+          sudo apt clean
+          git clone https://gitlab.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r445002 --depth=1 --single-branch --no-tags -b 12.0 ~/toolchains/clang
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-10.0.0_r47 --depth=1 --single-branch --no-tags ~/toolchains/aarch64-linux-android-4.9
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-10.0.0_r47 --depth=1 --single-branch --no-tags ~/toolchains/arm-linux-androideabi-4.9
+          
+      - name: checkout kernel (PixelOS)
+        uses: actions/checkout@v3
+        with:
+          repository: Grill-Laux/kernel_oneplus_sdm845
+          ref: pixelos/fourteen
+          
+      - name: Compile Kernel
+        run: |
+          CLANG=~/toolchains/clang/bin
+          GCC32=~/toolchains/arm-linux-androideabi-4.9/bin
+          GCC64=~/toolchains/aarch64-linux-android-4.9/bin
+          PATH=$CLANG:$GCC64:$GCC32:$PATH
+          export PATH
+          export ARCH=arm64
+          export CLANG_TRIPLE=aarch64-linux-gnu
+          export CROSS_COMPILE=aarch64-linux-android-
+          export CROSS_COMPILE_ARM32=arm-linux-androideabi-
+          output_dir=out
+          make O="$output_dir" enchilada_defconfig
+          make -j $(nproc) O="$output_dir" CC=clang
+          
+      - name: Make AnyKernel
+        run: |
+          mkdir -p out/arch/arm64/boot/
+          echo 123 > out/arch/arm64/boot/Image
+          echo 123 > out/arch/arm64/boot/Image.gz
+          echo 123 > out/arch/arm64/boot/Image.gz-dtb
+          curl -Lo AnyKernel3.zip https://github.com/Grill-Laux/AnyKernel3/archive/refs/heads/master.zip
+          unzip AnyKernel3.zip
+          cd AnyKernel3-master
+          cat > anykernel.sh <<EOF
+          properties() { '
+          do.devicecheck=0
+          do.cleanup=1
+          device.name1=enchilada
+          '; }
+          block=auto
+          is_slot_device=auto
+          . tools/ak3-core.sh
+          split_boot
+          flash_boot
+          EOF
+          cp ../out/arch/arm64/boot/Image.gz-dtb .
+          zip -r boot.zip * -x .git README.md *placeholder
+          cp boot.zip ../
+          cd .. && ls
+    
+      - name: Upload AnyKernel
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnyKernel_PixelOS_${{ env.BUILD_TIME }}_OnePlus-6X.zip
+          path: ./*.zip

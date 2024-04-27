@@ -1,0 +1,44 @@
+name: Update submodules
+on:
+  workflow_dispatch:
+  repository_dispatch: 
+    types:
+      - push
+      - pull request
+    repo: Grill-Laux/KernelSU
+jobs: 
+  los-update:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: write
+    steps: 
+      - name: Checkout Kernel
+        uses: actions/checkout@v3
+        with:
+          repository: Grill-Laux/kernel_oneplus_sdm845
+          ref: los/lineage-21.0
+      - name: Update submodule(s)
+        run: |
+          git config --global user.name "Grill-Laux"
+          git config --global user.email "moegluwu0@gmail.com"
+          git submodule update --init --remote --recursive -f
+          git commit -asm "KernelSU: Merge to newest"
+          git push
+          
+  oos-update:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: write
+    steps: 
+      - name: Checkout Kernel
+        uses: actions/checkout@v3
+        with:
+          repository: Grill-Laux/kernel_oneplus_sdm845
+          ref: oos/11.0
+      - name: Update submodule(s)
+        run: |
+          git config --global user.name "Grill-Laux"
+          git config --global user.email "moegluwu0@gmail.com"
+          git submodule update --init --remote --recursive -f
+          git commit -asm "KernelSU: Merge to newest"
+          git push         

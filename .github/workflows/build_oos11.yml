@@ -1,0 +1,76 @@
+name: Build OxygenOS' Kernel
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: ["oos/11.0"]
+jobs:
+  build-oos:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Clone Sources and Prepare Environment
+        run: |
+          echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+          sudo apt update -y
+          sudo apt-get install git ccache wget automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
+          sudo apt clean
+          git clone https://github.com/Grill-Laux/proton-clang.git --depth=1 ~/toolchains/clang
+          git clone https://github.com/Grill-Laux/android_prebuilts_misc_linux-x86_dtc_dtc ~/toolchains/dtc
+          chmod +x ~/toolchains/dtc/dtc
+          DTC_EXT=~/toolchains/dtc/dtc
+          
+      - name: Checkout kernel (OxygenOS)
+        uses: actions/checkout@v3
+        with:
+          repository: Grill-Laux/kernel_oneplus_sdm845
+          ref: oos/11.0
+
+      - name: Update KernelSU
+        run: |
+          git submodule update --init --remote
+          
+      - name: Clone GCC
+        run: |
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9 -b android-10.0.0_r47 --depth=1 --single-branch --no-tags ~/toolchains/aarch64-linux-android-4.9
+          git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9 -b android-10.0.0_r47 --depth=1 --single-branch --no-tags ~/toolchains/arm-linux-androideabi-4.9       
+
+      - name: Compile Kernel
+        run: |
+          chmod +x build_kernel_github_action.sh
+          ./build_kernel_github_action.sh
+          
+      - name: Make AnyKernel3 zip
+        run: |
+          mkdir -p out/arch/arm64/boot/
+          echo 123 > out/arch/arm64/boot/Image
+          echo 123 > out/arch/arm64/boot/Image.gz
+          echo 123 > out/arch/arm64/boot/Image.gz-dtb
+          curl -Lo AnyKernel3.zip https://github.com/Grill-Laux/AnyKernel3/archive/refs/heads/master.zip
+          unzip AnyKernel3.zip
+          cd AnyKernel3-master
+          cat > anykernel.sh <<EOF
+          properties() { '
+          do.devicecheck=0
+          do.cleanup=1
+          device.name1=enchilada
+          '; }
+          block=auto
+          is_slot_device=auto
+          . tools/ak3-core.sh
+          split_boot
+          flash_boot
+          EOF
+          cp ../out/arch/arm64/boot/Image.gz-dtb .
+          zip -r boot.zip * -x .git README.md *placeholder
+          cp boot.zip ../ && cd .. && ls
+          
+
+      - name: Upload AnyKernel3
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnyKernel3_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X.zip
+          path: ./*.zip
+          

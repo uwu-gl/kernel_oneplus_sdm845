@@ -1,0 +1,33 @@
+name: Release
+on:
+  workflow_dispatch:
+permissions:
+      contents: write
+jobs:
+  build-pixelos:
+    uses: ./.github/workflows/build_pixelos.yml
+  build-oos:
+    uses: ./.github/workflows/build_oos11.yml
+  build-los:
+    uses: ./.github/workflows/build_los.yml
+  release:
+    needs:
+      - build-pixelos
+      - build-oos
+      - build-los
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+      
+      - name: Set up date
+        run: echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+
+      - name: release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: KernelTarget(${{ env.BUILD_TIME }})
+          name: Kernel target release(${{ env.BUILD_TIME }})
+          files: |
+            AnyKernel3-*.zip
+        
