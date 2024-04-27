@@ -44,32 +44,13 @@ jobs:
       - name: Make AnyKernel3 zip
         run: |
           mkdir -p out/arch/arm64/boot/
-          echo 123 > out/arch/arm64/boot/Image
-          echo 123 > out/arch/arm64/boot/Image.gz
-          echo 123 > out/arch/arm64/boot/Image.gz-dtb
           curl -Lo AnyKernel3.zip https://github.com/Grill-Laux/AnyKernel3/archive/refs/heads/master.zip
-          unzip AnyKernel3.zip && rm -rf AnyKernel3.zip
-          cd AnyKernel3-master
-          cat > anykernel.sh <<EOF
-          properties() { '
-          do.devicecheck=0
-          do.cleanup=1
-          device.name1=enchilada
-          '; }
-          block=auto
-          is_slot_device=auto
-          . tools/ak3-core.sh
-          split_boot
-          flash_boot
-          EOF
-          cp ../out/arch/arm64/boot/Image.gz-dtb .
-          zip -r boot.zip * -x .git README.md *placeholder
-          cp boot.zip ../ && cd .. && ls
-          
+          unzip AnyKernel3.zip
+          cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3-master  
 
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:
           name: AnyKernel3_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X
-          path: ./*.zip
+          path: AnyKernel3-master/*
           
