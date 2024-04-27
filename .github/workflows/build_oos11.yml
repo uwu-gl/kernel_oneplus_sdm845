@@ -19,8 +19,7 @@ jobs:
           sudo apt clean
           git clone https://github.com/Grill-Laux/proton-clang.git --depth=1 ~/toolchains/clang
           git clone https://github.com/Grill-Laux/android_prebuilts_misc_linux-x86_dtc_dtc ~/toolchains/dtc
-          chmod +x ~/toolchains/dtc/dtc
-          DTC_EXT=~/toolchains/dtc/dtc
+          
           
       - name: Checkout kernel (OxygenOS)
         uses: actions/checkout@v3
