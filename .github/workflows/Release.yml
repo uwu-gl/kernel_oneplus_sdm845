@@ -19,13 +19,8 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
-      - name: ls
-        run: ls
-
-      - name: Copy zip to tmp folder
-        run: |
-          mkdir -p tmp
-          cp *.zip tmp/
+      - name: Prepare zip
+        run: find -type f | awk -F "." '{print $2} xargs -i -t mv ./{}.zip
         
       - name: Set up date
         run: echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV && ls
@@ -33,7 +28,7 @@ jobs:
       - name: release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: KernelTarget(${{ env.BUILD_TIME }})
+          tag_name: KernelTarget
           name: Kernel target release(${{ env.BUILD_TIME }})
-          files: tmp/*
+          files: ./*.zip
         
