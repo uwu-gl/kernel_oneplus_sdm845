@@ -10,7 +10,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Clone Kernel Sources and Prepare Environment
+      - name: Clone Sources and Prepare Environment
         run: |
           echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
           sudo apt update -y
@@ -26,6 +26,10 @@ jobs:
         with:
           repository: Grill-Laux/kernel_oneplus_sdm845
           ref: oos/11.0
+
+      - name: Update KernelSU
+        run: |
+          git submodule update --init --remote
           
       - name: Clone GCC
         run: |
