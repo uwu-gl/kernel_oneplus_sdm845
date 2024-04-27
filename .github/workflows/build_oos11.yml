@@ -1,6 +1,7 @@
 name: Build OxygenOS' Kernel
 
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     branches: ["oos/11.0"]
