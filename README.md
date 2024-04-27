@@ -26,7 +26,7 @@ Already supported KernelSU, LXC, docker.
     <5> Download kernel source
      [!] WARN: Please clone with --recursive!    
     ```
-    $ git clone https://github.com/Grill-Laux/kernel_oneplus_sdm845 -b oos/11.0 android-kernel --recursive --depth=1       $ cd android-kernel
+    $ git clone https://github.com/Grill-Laux/kernel_oneplus_sdm845 -b oos/11.0 android-kernel --recursive --depth=1 && cd android-kernel
     ```    
   
     <6> Now, let's setup path  
