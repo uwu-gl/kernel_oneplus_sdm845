@@ -64,7 +64,7 @@ jobs:
           EOF
           cp ../out/arch/arm64/boot/Image.gz-dtb .
           zip -r boot.zip * -x .git README.md *placeholder
-          cp boot ../ && cd .. && ls
+          cp boot.zip ../ && cd .. && ls
           
 
       - name: Upload AnyKernel3
