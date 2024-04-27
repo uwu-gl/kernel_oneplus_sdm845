@@ -1,5 +1,6 @@
 name: Build LineageOS' Kernel
 on: 
+  workflow_call:
   workflow_dispatch:
   push:
     branches: ["los/lineage-21.0"]
