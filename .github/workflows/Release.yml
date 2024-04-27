@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
+      - name: ls
+        run: ls
 
       - name: Copy zip to tmp folder
         run: |
