@@ -5,7 +5,7 @@ on:
     types:
       - push
       - pull request
-    repo: Grill-Laux/KernelSU
+    repository: Grill-Laux/KernelSU
 jobs: 
   los-update:
     runs-on: ubuntu-latest
