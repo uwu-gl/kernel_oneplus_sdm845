@@ -2,7 +2,7 @@ name: Build LineageOS' Kernel
 on: 
   workflow_dispatch:
   push:
-    branches: ["pixelos/fourteen-qpr2"]
+    branches: ["los/lineage-21.0"]
 jobs: 
   build-lineageos:
     runs-on: ubuntu-latest
