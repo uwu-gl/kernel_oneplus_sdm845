@@ -29,5 +29,5 @@ jobs:
           tag_name: KernelTarget(${{ env.BUILD_TIME }})
           name: Kernel target release(${{ env.BUILD_TIME }})
           files: |
-            AnyKernel3-*.zip
+            ./*.zip
         
