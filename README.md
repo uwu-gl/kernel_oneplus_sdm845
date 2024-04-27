@@ -11,7 +11,7 @@ Already supported KernelSU, LXC, docker.
     ```    
     <2> Download necessary packages  
     ```
-    $ sudo apt-get install git ccache automake flex lzop bison gperf build-essential zip curl gcc-aarch64-linux-gnu zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3  
+    $ sudo apt-get install git ccache wget automake flex lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3
     ```    
     <3> Download Clang  
       [!] Please use this clang, or you will maybe face troubles!  
@@ -32,7 +32,7 @@ Already supported KernelSU, LXC, docker.
     <6> Now, let's setup path  
     First, set build path:  
     ```
-    $ export PATH=~/toolchains/clang/bin/:$PATH && export CC=clang && CLANG=~/toolchains/clang/bin && GCC32=~/toolchains/arm-linux-androideabi-4.9/bin && GCC64=~/toolchains/aarch64-linux-android-4.9/bin && PATH=$CLANG:$GCC64:$GCC32:$PATH && export PATH && export ARCH=arm64 && export CLANG_TRIPLE=aarch64-linux-gnu && export CROSS_COMPILE=aarch64-linux-android- && export CROSS_COMPILE_ARM32=arm-linux-androideabi-
+    $ export PATH=~/toolchains/clang/bin/:$PATH && export CC=clang && export CLANG=~/toolchains/clang/bin && export GCC32=~/toolchains/arm-linux-androideabi-4.9/bin && export GCC64=~/toolchains/aarch64-linux-android-4.9/bin && export PATH=$CLANG:$GCC64:$GCC32:$PATH && export PATH && export ARCH=arm64 && export CLANG_TRIPLE=aarch64-linux-gnu && export CROSS_COMPILE=aarch64-linux-android- && export CROSS_COMPILE_ARM32=arm-linux-androideabi- && export ARCH=arm64 && export SUBARCH=arm64
     ```    
     Second, set dtc:
     ``` 
