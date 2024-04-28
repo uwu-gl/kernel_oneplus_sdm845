@@ -22,6 +22,21 @@
 
 #define NUM_SUPPLIES 2
 
+static const char *const regulator_names[] = {
+	"vddi",
+	"vpnl",
+};
+
+static unsigned long const regulator_enable_loads[] = {
+	62000,
+	857000,
+};
+
+static unsigned long const regulator_disable_loads[] = {
+	80,
+	0,
+};
+
 struct sw43408_panel {
 	struct drm_panel base;
 	struct mipi_dsi_device *link;
@@ -41,7 +56,7 @@ static inline struct sw43408_panel *to_panel_info(struct drm_panel *panel)
 static int sw43408_unprepare(struct drm_panel *panel)
 {
 	struct sw43408_panel *ctx = to_panel_info(panel);
-	int ret;
+	int ret, i;
 
 	ret = mipi_dsi_dcs_set_display_off(ctx->link);
 	if (ret < 0)
@@ -53,7 +68,17 @@ static int sw43408_unprepare(struct drm_panel *panel)
 
 	msleep(100);
 
-	gpiod_set_value(ctx->reset_gpio, 1);
+	//gpiod_set_value(ctx->reset_gpio, 1);
+
+    for (i = 0; i < ARRAY_SIZE(ctx->supplies); i++) {
+		ret = regulator_set_load(ctx->supplies[i].consumer,
+					 regulator_disable_loads[i]);
+		if (ret) {
+			dev_err(panel->dev,
+				      "regulator_set_load failed %d\n", ret);
+			return ret;
+		}
+	}
 
 	return regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 }
@@ -122,8 +147,15 @@ static int sw43408_program(struct drm_panel *panel)
 static int sw43408_prepare(struct drm_panel *panel)
 {
 	struct sw43408_panel *ctx = to_panel_info(panel);
-	int ret;
+	int ret, i;
 
+	for (i = 0; i < ARRAY_SIZE(ctx->supplies); i++) {
+		ret = regulator_set_load(ctx->supplies[i].consumer,
+					 regulator_enable_loads[i]);
+		if (ret)
+			return ret;
+	}
+	
 	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 	if (ret < 0)
 		return ret;
