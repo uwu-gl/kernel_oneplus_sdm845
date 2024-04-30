@@ -7,31 +7,19 @@ on:
 permissions:
       contents: write
 jobs:
-  get-version:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get version from weishu's ksu
-        run: |
-          sudo apt install -y curl jq
-          KSU_RELEASE=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
-          echo $KSU_RELEASE
-          echo "KSU_RELEASE=$KSU_RELEASE" >> $GITHUB_ENV
   update-ksu:
     uses: ./.github/workflows/ksu_update.yml
   build-pixelos:
     needs:
       - update-ksu
-      - get-version
     uses: ./.github/workflows/build_pixelos.yml
   build-oos:
     needs:
       - update-ksu
-      - get-version
     uses: ./.github/workflows/build_oos11.yml
   build-los:
     needs:
       - update-ksu
-      - get-version
     uses: ./.github/workflows/build_los.yml
   release:
     needs:
@@ -54,6 +42,13 @@ jobs:
       - name: Set up date
         run: echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y.%m.%d %H:%M")" >> $GITHUB_ENV
 
+      - name: Get version from weishu's ksu
+        run: |
+          sudo apt install -y curl jq
+          KSU_RELEASE=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
+          echo $KSU_RELEASE
+          echo "KSU_RELEASE=$KSU_RELEASE" >> $GITHUB_ENV
+          
       - name: release
         uses: softprops/action-gh-release@v2
         with:
