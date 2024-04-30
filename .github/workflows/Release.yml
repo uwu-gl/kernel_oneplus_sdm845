@@ -4,19 +4,11 @@ on:
 permissions:
       contents: write
 jobs:
-  update-ksu:
-    uses: ./.github/workflows/ksu_update.yml
   build-pixelos:
-    needs:
-      - update-ksu
     uses: ./.github/workflows/build_pixelos.yml
   build-oos:
-    needs:
-      - update-ksu
     uses: ./.github/workflows/build_oos11.yml
   build-los:
-    needs:
-      - update-ksu
     uses: ./.github/workflows/build_los.yml
   release:
     needs:
