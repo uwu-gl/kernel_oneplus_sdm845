@@ -15,8 +15,8 @@ jobs:
           ref: los/lineage-21.0
       - name: Update submodule(s)
         run: |
-          git config --global user.name "Grill-Laux"
-          git config --global user.email "moegluwu0@gmail.com"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git submodule update --init --remote --recursive -f
           git commit -asm "KernelSU: Merge to newest"
           git push
@@ -33,8 +33,8 @@ jobs:
           ref: oos/11.0
       - name: Update submodule(s)
         run: |
-          git config --global user.name "Grill-Laux"
-          git config --global user.email "moegluwu0@gmail.com"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git submodule update --init --remote --recursive -f
           git commit -asm "KernelSU: Merge to newest"
           git push         
