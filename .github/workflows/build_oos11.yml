@@ -4,7 +4,7 @@ on:
   workflow_call:
   workflow_dispatch:
   push:
-    branches: ["oos/11.0"]
+    branches: ["oos/wip"]
 jobs:
   build-oos:
     runs-on: ubuntu-latest
