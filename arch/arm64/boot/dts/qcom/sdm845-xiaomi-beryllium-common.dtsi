@@ -38,7 +38,12 @@
 	qcom,msm-id = <321 0x20001>;
 
 	aliases {
+		serial0 = &uart9;
 		serial1 = &uart6;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
 	};
 
 	gpio-keys {
@@ -465,6 +470,16 @@
 	status = "okay";
 };
 
+&qup_uart9_rx {
+	drive-strength = <2>;
+	bias-pull-up;
+};
+
+&qup_uart9_tx {
+	drive-strength = <2>;
+	bias-disable;
+};
+
 &sdhc_2 {
 	status = "okay";
 
@@ -661,6 +676,11 @@
 		vddch0-supply = <&vreg_l25a_3p3>;
 		max-speed = <3200000>;
 	};
+};
+
+&uart9 {
+	label = "LS-UART1";
+	status = "okay";
 };
 
 &ufs_mem_hc {
