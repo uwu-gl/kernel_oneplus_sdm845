@@ -4,7 +4,7 @@ on:
   workflow_call:
   workflow_dispatch:
   push:
-    branches: ["oos/wip"]
+    branches: ["oos/wip-upstream"]
 jobs:
   build-oos:
     runs-on: ubuntu-latest
@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: Grill-Laux/kernel_oneplus_sdm845
-          ref: oos/wip
+          ref: oos/wip-upstream
 
       - name: Update KernelSU
         run: |
