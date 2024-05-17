@@ -1,12 +1,12 @@
 # OOS 内核编译指南
 
-我会在这个教程中帮助你编译内核，并安装到您的6（t）上。
+我会在这个教程中帮助你编译内核，并安装到您的一加6(T)设备上。
 
 # 编译内核
 
 ### 操作系统需求
 
-一个运行 **Linux 64位 (x86_64)** 的电脑，不要太旧。
+一个运行 **64位x86 Linux (x86_64)** 的电脑，别拿个古董机。
 
 在这个教程里，我们就用Ubuntu 20.04吧。
 
@@ -21,7 +21,7 @@
 
         **提示： 这一步里我们已经安装好了gcc。**
         
-        **R.I.P. Google GCC**
+        **Google GCC 寄**
 
 
 
@@ -40,7 +40,7 @@
 ```bash
 git clone https://github.com/Grill-Laux/kernel_oneplus_sdm845 ~/android-kernel --recursive --depth=1 -b oos/wip-upstream
 ```
-**警告： 请完全复制粘贴，如果要去掉某个参数，请谨慎！**
+**警告： 请完全复制粘贴，如果要去掉某个参数，请谨慎操作，萌新别这么干，如果你这么干，还来问我 我会笑你的**
 
 ### 第三步： 设置path
 ```bash
@@ -90,8 +90,8 @@ sudo apt install adb -y
 ```bash
 adb sideload path-to-your-package.zip
 ```
-请将`path-to-your-package.zip`替换成您的刷机包路径。
+请将`path-to-your-package.zip`替换成您的刷机包路径，有图形界面的直接把那个文件拖到终端里
 
-此时设备上的安装应该已经开始。
+此时设备应该已经开始安装AK3刷机包
 
 如果您有任何不理解/没看懂/认为有问题的地方，请打开一个新的issue，谢谢！
