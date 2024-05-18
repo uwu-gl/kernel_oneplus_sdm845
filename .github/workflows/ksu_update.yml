@@ -15,8 +15,8 @@ jobs:
           ref: oos/wip-upstream
       - name: Update KernelSU
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          git config user.name github-action
+          git config user.email github-action@github.com
           LOCAL_VERSION=$(cat drivers/kernelsu/ksu_version.txt)
           REMOTE_VERSION=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
           echo "#######################"
@@ -26,4 +26,4 @@ jobs:
           echo "remote ksu version:"
           echo $REMOTE_VERSION
           echo "#######################"
-          if [$LOCAL_VERSION != $REMOTE_VERSION], then rm -rf drivers/kernelsu; git clone https://github.com/tiann/KernelSU ~/staging/ksu; mv ~/staging/ksu/kernel ~/staging/ksu/kernelsu; cp -r ~/staging/ksu/kernelsu ./drivers/; touch ./drivers/kernelsu/ksu_version.txt; echo $REMOTE_VERSION>./drivers/kernelsu/ksu_version.txt; rm -f ./drivers/kernelsu/setup.sh; rm -rf ~/staging; git add . ; git commit -asm "drivers: kernelsu: Merge to newest"; git push; exit 1 || echo "No need to merge."; exit 1   
+          if [$LOCAL_VERSION != $REMOTE_VERSION], then rm -rf drivers/kernelsu; git clone https://github.com/tiann/KernelSU ~/staging/ksu; mv ~/staging/ksu/kernel ~/staging/ksu/kernelsu; cp -r ~/staging/ksu/kernelsu ./drivers/; touch ./drivers/kernelsu/ksu_version.txt; echo $REMOTE_VERSION>./drivers/kernelsu/ksu_version.txt; rm -f ./drivers/kernelsu/setup.sh; rm -rf ~/staging; git add . ; git commit -asm "drivers: kernelsu: Merge to newest"; git push; exit 1 
