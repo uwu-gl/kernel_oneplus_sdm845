@@ -3,24 +3,6 @@ on:
   workflow_dispatch:
   workflow_call:
 jobs: 
-  los-update:
-    runs-on: ubuntu-latest
-    permissions:
-        contents: write
-    steps: 
-      - name: Checkout Kernel
-        uses: actions/checkout@v3
-        with:
-          repository: Grill-Laux/kernel_oneplus_sdm845
-          ref: los/lineage-21.0
-      - name: Update submodule(s)
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git submodule update --init --remote --recursive -f
-          git commit -asm "KernelSU: Merge to newest"
-          git push
-          
   oos-update:
     runs-on: ubuntu-latest
     permissions:
@@ -30,11 +12,18 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: Grill-Laux/kernel_oneplus_sdm845
-          ref: oos/11.0
-      - name: Update submodule(s)
+          ref: oos/wip-upstream
+      - name: Update KernelSU
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git submodule update --init --remote --recursive -f
-          git commit -asm "KernelSU: Merge to newest"
-          git push         
+          LOCAL_VERSION$=$(cat drivers/kernelsu/ksu_version.txt)
+          REMOTE_VERSION=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
+          echo "#######################"
+          echo "ksu in tree version:"
+          echo $LOCAL_VERSION
+          echo "#######################"
+          echo "remote ksu version:"
+          echo $REMOTE_VERSION
+          echo "#######################"
+          if [$LOCAL_VERSION != $REMOTE_VERSION], then rm -rf drivers/kernelsu; git clone https://github.com/tiann/KernelSU ~/staging/ksu; mv ~/staging/ksu/kernel ~/staging/ksu/kernelsu; cp -r ~/staging/ksu/kernelsu ./drivers/; touch ./drivers/kernelsu/ksu_version.txt; echo $REMOTE_VERSION>./drivers/kernelsu/ksu_version.txt; rm -f ./drivers/kernelsu/setup.sh; rm -rf ~/staging; git add . ; git commit -asm "drivers: kernelsu: Merge to newest"; git push; exit 1; else echo "No need to merge."; exit 1; fi        
