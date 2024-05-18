@@ -26,4 +26,4 @@ jobs:
           echo "remote ksu version:"
           echo $REMOTE_VERSION
           echo "#######################"
-          if [$LOCAL_VERSION != $REMOTE_VERSION], then rm -rf drivers/kernelsu; git clone https://github.com/tiann/KernelSU ~/staging/ksu; mv ~/staging/ksu/kernel ~/staging/ksu/kernelsu; cp -r ~/staging/ksu/kernelsu ./drivers/; touch ./drivers/kernelsu/ksu_version.txt; echo $REMOTE_VERSION>./drivers/kernelsu/ksu_version.txt; rm -f ./drivers/kernelsu/setup.sh; rm -rf ~/staging; git add . ; git commit -asm "drivers: kernelsu: Merge to newest"; git push; exit 1; else echo "No need to merge."; exit 1; fi        
+          if [$LOCAL_VERSION != $REMOTE_VERSION], then rm -rf drivers/kernelsu; git clone https://github.com/tiann/KernelSU ~/staging/ksu; mv ~/staging/ksu/kernel ~/staging/ksu/kernelsu; cp -r ~/staging/ksu/kernelsu ./drivers/; touch ./drivers/kernelsu/ksu_version.txt; echo $REMOTE_VERSION>./drivers/kernelsu/ksu_version.txt; rm -f ./drivers/kernelsu/setup.sh; rm -rf ~/staging; git add . ; git commit -asm "drivers: kernelsu: Merge to newest"; git push; exit 1 || echo "No need to merge."; exit 1   
