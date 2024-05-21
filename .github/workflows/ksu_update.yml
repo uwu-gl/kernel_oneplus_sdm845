@@ -13,17 +13,15 @@ jobs:
         with:
           repository: Grill-Laux/kernel_oneplus_sdm845
           ref: oos/wip-upstream
+      
       - name: Update KernelSU
         run: |
-          git config user.name github-action
-          git config user.email github-action@github.com
-          LOCAL_VERSION=$(cat drivers/kernelsu/ksu_version.txt)
-          REMOTE_VERSION=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`
-          echo "#######################"
-          echo "ksu in tree version:"
-          echo $LOCAL_VERSION
-          echo "#######################"
-          echo "remote ksu version:"
-          echo $REMOTE_VERSION
-          echo "#######################"
-          if [$LOCAL_VERSION != $REMOTE_VERSION], then rm -rf drivers/kernelsu; git clone https://github.com/tiann/KernelSU ~/staging/ksu; mv ~/staging/ksu/kernel ~/staging/ksu/kernelsu; cp -r ~/staging/ksu/kernelsu ./drivers/; touch ./drivers/kernelsu/ksu_version.txt; echo $REMOTE_VERSION>./drivers/kernelsu/ksu_version.txt; rm -f ./drivers/kernelsu/setup.sh; rm -rf ~/staging; git add . ; git commit -asm "drivers: kernelsu: Merge to newest"; git push; exit 1 
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"   git submodule update --init --remote --recursive -f
+          git clone https://github.com/tiann/KernelSU remote && cd remote
+          version_ksu=$[$(git rev-list --count HEAD)+10200]
+          cd - && rm -rf remote
+          echo "kernelsu_release=`curl https://api.github.com/repos/tiann/KernelSU/releases/latest | jq -r .tag_name`" >> $GITHUB_ENV
+          git submodule update --init --remote --recursive -f
+          git commit -asm "drivers: kernelsu: Bump version to $version_ksu (${{ env.kernelsu_release }})"
+          git push
