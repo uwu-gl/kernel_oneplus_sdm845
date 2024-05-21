@@ -17,7 +17,7 @@ jobs:
       - name: Update KernelSU
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"   git submodule update --init --remote --recursive -f
+          git config --global user.name "github-actions[bot]"
           git clone https://github.com/tiann/KernelSU remote && cd remote
           version_ksu=$[$(git rev-list --count HEAD)+10200]
           cd - && rm -rf remote
