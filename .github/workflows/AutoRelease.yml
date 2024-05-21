@@ -26,6 +26,7 @@ jobs:
       - build-pixelos
       - build-oos
       - build-los
+      - update-ksu
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
