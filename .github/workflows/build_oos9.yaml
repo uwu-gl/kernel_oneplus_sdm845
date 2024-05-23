@@ -1,0 +1,52 @@
+name: Build OxygenOS' Kernel
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  push:
+    branches: ["oos/9.0"]
+jobs:
+  build-oos9:
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    steps:
+      - name: Clone Sources and Prepare Environment
+        run: |
+          echo "BUILD_TIME=$(TZ=Asia/Shanghai date "+%Y%m%d%H%M")" >> $GITHUB_ENV
+          sudo apt update -y
+          sudo apt-get install -y git ccache wget automake flex lzop bison gperf build-essential zip curl zlib1g-dev libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev pwgen libswitch-perl policycoreutils minicom libxml-sax-base-perl libxml-simple-perl bc libc6-dev-i386 lib32ncurses5-dev libx11-dev lib32z-dev libgl1-mesa-dev xsltproc unzip device-tree-compiler python2 python3 gcc-9-aarch64-linux-gnu gcc-9-arm-linux-gnueabi gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi
+          sudo apt clean
+          mkdir -p ~/toolchains/clang && cd ~/toolchains/clang && wget -O clang.tar.gz https://android.googlesource.com/platform//prebuilts/clang/host/linux-x86/+archive/refs/tags/android-14.0.0_r0.78/clang-r416183b.tar.gz && tar zxvf clang.tar.gz && rm -f clang.tar.gz && cd -
+          
+      - name: Checkout kernel (OxygenOS 9.x.x)
+        uses: actions/checkout@v3
+        with:
+          repository: Grill-Laux/kernel_oneplus_sdm845
+          ref: oos/9.0
+
+      
+      - name: Compile Kernel
+        run: |
+          CLANG=~/toolchains/clang/bin
+          PATH=$CLANG:$PATH
+          export PATH
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export CLANG_TRIPLE=aarch64-linux-gnu-
+          export CROSS_COMPILE=aarch64-linux-gnu-
+          export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
+          make O=out sdm845-perf_defconfig
+          make -j $(nproc) O=out CC=clang
+          
+      - name: Make AnyKernel3
+        run: |
+          git clone https://github.com/Grill-Laux/AnyKernel3 anykernel
+          cp out/arch/arm64/boot/Image.gz-dtb anykernel
+
+      - name: Upload AnyKernel3
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnyKernel_OxygenOS_${{ env.BUILD_TIME }}_OnePlus-6X
+          path: anykernel/*
+          
