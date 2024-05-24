@@ -2354,7 +2354,7 @@ again:
 	list_splice(&reloc_roots, &rc->reloc_roots);
 
 	if (!err)
-		btrfs_commit_transaction(trans, rc->extent_root);
+		err = btrfs_commit_transaction(trans, rc->extent_root);
 	else
 		btrfs_end_transaction(trans, rc->extent_root);
 	return err;
@@ -3969,8 +3969,12 @@ int prepare_to_relocate(struct reloc_control *rc)
 		 */
 		return PTR_ERR(trans);
 	}
-	btrfs_commit_transaction(trans, rc->extent_root);
-	return 0;
+
+	ret = btrfs_commit_transaction(trans, rc->extent_root);
+	if (ret)
+		unset_reloc_control(rc);
+
+	return ret;
 }
 
 /*
@@ -4254,7 +4258,9 @@ restart:
 			err = ret;
 		goto out_free;
 	}
-	btrfs_commit_transaction(trans, rc->extent_root);
+	ret = btrfs_commit_transaction(trans, rc->extent_root);
+	if (ret && !err)
+		err = ret;
 out_free:
 	btrfs_free_block_rsv(rc->extent_root, rc->block_rsv);
 	btrfs_free_path(path);

@@ -29,7 +29,8 @@ bool verity_fec_is_enabled(struct dm_verity *v)
  */
 static inline struct dm_verity_fec_io *fec_io(struct dm_verity_io *io)
 {
-	return (struct dm_verity_fec_io *) verity_io_digest_end(io->v, io);
+	return (struct dm_verity_fec_io *)
+		((char *)io + io->v->ti->per_io_data_size - sizeof(struct dm_verity_fec_io));
 }
 
 /*
@@ -74,7 +75,7 @@ static u8 *fec_read_parity(struct dm_verity *v, u64 rsb, int index,
 	*offset = (unsigned)(position - (block << v->data_dev_block_bits));
 
 	res = dm_bufio_read(v->fec->bufio, v->fec->start + block, buf);
-	if (unlikely(IS_ERR(res))) {
+	if (IS_ERR(res)) {
 		DMERR("%s: FEC %llu: parity read failed (block %llu): %ld",
 		      v->data_dev->name, (unsigned long long)rsb,
 		      (unsigned long long)(v->fec->start + block),
@@ -164,7 +165,7 @@ static int fec_decode_bufs(struct dm_verity *v, struct dm_verity_fec_io *fio,
 			dm_bufio_release(buf);
 
 			par = fec_read_parity(v, rsb, block_offset, &offset, &buf);
-			if (unlikely(IS_ERR(par)))
+			if (IS_ERR(par))
 				return PTR_ERR(par);
 		}
 	}
@@ -253,7 +254,7 @@ static int fec_read_bufs(struct dm_verity *v, struct dm_verity_io *io,
 		}
 
 		bbuf = dm_bufio_read(bufio, block, &buf);
-		if (unlikely(IS_ERR(bbuf))) {
+		if (IS_ERR(bbuf)) {
 			DMWARN_LIMIT("%s: FEC %llu: read failed (%llu): %ld",
 				     v->data_dev->name,
 				     (unsigned long long)rsb,
@@ -311,19 +312,14 @@ static int fec_alloc_bufs(struct dm_verity *v, struct dm_verity_fec_io *fio)
 {
 	unsigned n;
 
-	if (!fio->rs) {
-		fio->rs = mempool_alloc(v->fec->rs_pool, 0);
-		if (unlikely(!fio->rs)) {
-			DMERR("failed to allocate RS");
-			return -ENOMEM;
-		}
-	}
+	if (!fio->rs)
+		fio->rs = mempool_alloc(v->fec->rs_pool, GFP_NOIO);
 
 	fec_for_each_prealloc_buffer(n) {
 		if (fio->bufs[n])
 			continue;
 
-		fio->bufs[n] = mempool_alloc(v->fec->prealloc_pool, GFP_NOIO);
+		fio->bufs[n] = mempool_alloc(v->fec->prealloc_pool, GFP_NOWAIT);
 		if (unlikely(!fio->bufs[n])) {
 			DMERR("failed to allocate FEC buffer");
 			return -ENOMEM;
@@ -335,21 +331,15 @@ static int fec_alloc_bufs(struct dm_verity *v, struct dm_verity_fec_io *fio)
 		if (fio->bufs[n])
 			continue;
 
-		fio->bufs[n] = mempool_alloc(v->fec->extra_pool, GFP_NOIO);
+		fio->bufs[n] = mempool_alloc(v->fec->extra_pool, GFP_NOWAIT);
 		/* we can manage with even one buffer if necessary */
 		if (unlikely(!fio->bufs[n]))
 			break;
 	}
 	fio->nbufs = n;
 
-	if (!fio->output) {
+	if (!fio->output)
 		fio->output = mempool_alloc(v->fec->output_pool, GFP_NOIO);
-
-		if (!fio->output) {
-			DMERR("failed to allocate FEC page");
-			return -ENOMEM;
-		}
-	}
 
 	return 0;
 }

@@ -23,7 +23,9 @@
 #define SHARP_UNIT		40000  /* ns */
 #define SHARP_BIT_PULSE		(8    * SHARP_UNIT) /* 320us */
 #define SHARP_BIT_0_PERIOD	(25   * SHARP_UNIT) /* 1ms (680us space) */
-#define SHARP_BIT_1_PERIOD	(50   * SHARP_UNIT) /* 2ms (1680ms space) */
+#define SHARP_BIT_1_PERIOD	(50   * SHARP_UNIT) /* 2ms (1680us space) */
+#define SHARP_BIT_0_SPACE	(17   * SHARP_UNIT) /* 680us space */
+#define SHARP_BIT_1_SPACE	(42   * SHARP_UNIT) /* 1680us space */
 #define SHARP_ECHO_SPACE	(1000 * SHARP_UNIT) /* 40 ms */
 #define SHARP_TRAILER_SPACE	(125  * SHARP_UNIT) /* 5 ms (even longer) */
 
@@ -173,9 +175,59 @@ static int ir_sharp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 	return -EINVAL;
 }
 
+static const struct ir_raw_timings_pd ir_sharp_timings = {
+	.header_pulse  = 0,
+	.header_space  = 0,
+	.bit_pulse     = SHARP_BIT_PULSE,
+	.bit_space[0]  = SHARP_BIT_0_SPACE,
+	.bit_space[1]  = SHARP_BIT_1_SPACE,
+	.trailer_pulse = SHARP_BIT_PULSE,
+	.trailer_space = SHARP_ECHO_SPACE,
+	.msb_first     = 1,
+};
+
+/**
+ * ir_sharp_encode() - Encode a scancode as a stream of raw events
+ *
+ * @protocol:	protocol to encode
+ * @scancode:	scancode to encode
+ * @events:	array of raw ir events to write into
+ * @max:	maximum size of @events
+ *
+ * Returns:	The number of events written.
+ *		-ENOBUFS if there isn't enough space in the array to fit the
+ *		encoding. In this case all @max events will have been written.
+ */
+static int ir_sharp_encode(enum rc_type protocol, u32 scancode,
+			   struct ir_raw_event *events, unsigned int max)
+{
+	struct ir_raw_event *e = events;
+	int ret;
+	u32 raw;
+
+	raw = (((bitrev8(scancode >> 8) >> 3) << 8) & 0x1f00) |
+		bitrev8(scancode);
+	ret = ir_raw_gen_pd(&e, max, &ir_sharp_timings, SHARP_NBITS,
+			    (raw << 2) | 2);
+	if (ret < 0)
+		return ret;
+
+	max -= ret;
+
+	raw = (((bitrev8(scancode >> 8) >> 3) << 8) & 0x1f00) |
+		bitrev8(~scancode);
+	ret = ir_raw_gen_pd(&e, max, &ir_sharp_timings, SHARP_NBITS,
+			    (raw << 2) | 1);
+	if (ret < 0)
+		return ret;
+
+	return e - events;
+}
+
 static struct ir_raw_handler sharp_handler = {
 	.protocols	= RC_BIT_SHARP,
 	.decode		= ir_sharp_decode,
+	.encode		= ir_sharp_encode,
 };
 
 static int __init ir_sharp_decode_init(void)

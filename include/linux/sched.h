@@ -532,6 +532,7 @@ static inline void io_schedule(void)
 }
 
 void __noreturn do_task_dead(void);
+void __noreturn make_task_dead(int signr);
 
 struct nsproxy;
 struct user_namespace;
@@ -796,7 +797,7 @@ struct signal_struct {
 	unsigned int		has_child_subreaper:1;
 
 	/* POSIX.1b Interval Timers */
-	int			posix_timer_id;
+	unsigned int		next_posix_timer_id;
 	struct list_head	posix_timers;
 
 	/* ITIMER_REAL timer for the process */
@@ -3484,7 +3485,7 @@ static inline void *task_stack_page(const struct task_struct *task)
 
 #define setup_thread_stack(new,old)	do { } while(0)
 
-static inline unsigned long *end_of_stack(const struct task_struct *task)
+static __always_inline unsigned long *end_of_stack(const struct task_struct *task)
 {
 	return task->stack;
 }
