@@ -130,5 +130,3 @@ $(obj)/config_data.gz: $(KCONFIG_CONFIG) FORCE
 targets += config_data.h
 $(obj)/config_data.h: $(obj)/config_data.gz FORCE
 	$(call filechk,ikconfiggz)
-
-KBUILD_CFLAGS += $(call cc-disable-warning, attribute-alias)
