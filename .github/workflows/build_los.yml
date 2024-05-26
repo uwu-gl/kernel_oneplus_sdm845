@@ -25,11 +25,8 @@ jobs:
         with:
           repository: Grill-Laux/kernel_oneplus_sdm845
           ref: los/lineage-21.0
-          
-      - name: Update submodule
-        run: |
-          git submodule update --init --remote --recursive -f
-      
+          submodule: recursive
+        
       - name: Compile Kernel
         run: |
           CLANG=~/toolchains/clang/bin
