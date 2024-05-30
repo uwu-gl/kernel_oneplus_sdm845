@@ -26,7 +26,7 @@ struct samsung_s6e3fc2x01 {
 	struct mipi_dsi_device *dsi;
 	bool first_prepare;
 	struct regulator_bulk_data supplies[3];
-	struct gpio_desc *reset_gpio;
+	//struct gpio_desc *reset_gpio;
 };
 
 static inline
@@ -35,13 +35,13 @@ struct samsung_s6e3fc2x01 *to_samsung_s6e3fc2x01(struct drm_panel *panel)
 	return container_of(panel, struct samsung_s6e3fc2x01, panel);
 }
 
-static void samsung_s6e3fc2x01_reset(struct samsung_s6e3fc2x01 *ctx)
-{
-	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-	usleep_range(2000, 3000);
-	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
-	usleep_range(10000, 11000);
-}
+// static void samsung_s6e3fc2x01_reset(struct samsung_s6e3fc2x01 *ctx)
+// {
+// 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+// 	usleep_range(2000, 3000);
+// 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
+// 	usleep_range(10000, 11000);
+// }
 
 static int samsung_s6e3fc2x01_on(struct samsung_s6e3fc2x01 *ctx)
 {
@@ -189,19 +189,19 @@ static int samsung_s6e3fc2x01_prepare(struct drm_panel *panel)
 		return 0;
 	}
 
-	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
-	if (ret < 0) {
-		dev_err(dev, "Failed to enable regulator: %d\n", ret);
-		return ret;
-	}
+	// ret = regulator_bulk_enable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+	// if (ret < 0) {
+	// 	dev_err(dev, "Failed to enable regulator: %d\n", ret);
+	// 	return ret;
+	// }
 
-	samsung_s6e3fc2x01_reset(ctx);
+	//samsung_s6e3fc2x01_reset(ctx);
 
 	ret = samsung_s6e3fc2x01_on(ctx);
 	if (ret < 0) {
 		dev_err(dev, "Failed to initialize panel: %d\n", ret);
-		gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-		regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+		//gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+		//regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 		return ret;
 	}
 
@@ -213,11 +213,11 @@ static int samsung_s6e3fc2x01_disable(struct drm_panel *panel)
 	struct samsung_s6e3fc2x01 *ctx = to_samsung_s6e3fc2x01(panel);
 
 	dev_dbg(&ctx->dsi->dev, "%s\n", __func__);
-	
+
 	samsung_s6e3fc2x01_off(ctx);
 
-	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
-	regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
+	//gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+	//regulator_bulk_disable(ARRAY_SIZE(ctx->supplies), ctx->supplies);
 
 	return 0;
 }
@@ -325,10 +325,10 @@ static int samsung_s6e3fc2x01_probe(struct mipi_dsi_device *dsi)
 				     "Failed to enable regulators\n");
 
 	ctx->first_prepare = true;
-	ctx->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
-	if (IS_ERR(ctx->reset_gpio))
-		return dev_err_probe(dev, PTR_ERR(ctx->reset_gpio),
-				     "Failed to get reset-gpios\n");
+	// ctx->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
+	// if (IS_ERR(ctx->reset_gpio))
+	// 	return dev_err_probe(dev, PTR_ERR(ctx->reset_gpio),
+	// 			     "Failed to get reset-gpios\n");
 
 	ctx->dsi = dsi;
 	mipi_dsi_set_drvdata(dsi, ctx);
