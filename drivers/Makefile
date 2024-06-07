@@ -183,4 +183,5 @@ obj-$(CONFIG_SENSORS_SSC)		+= sensors/
 obj-$(CONFIG_TEE)		+= tee/
 obj-y				+= oneplus/
 
-obj-$(CONFIG_KSU) += kernelsu/
+#obj-$(CONFIG_KSU) += kernelsu/
+# Goodbye, KernelSU!

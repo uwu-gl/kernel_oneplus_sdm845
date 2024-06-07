@@ -214,5 +214,8 @@ source "drivers/tee/Kconfig"
 
 source "drivers/oneplus/Kconfig"
 
-source "drivers/kernelsu/Kconfig"
+#source "drivers/kernelsu/Kconfig"
+# See you, KernelSU!
+# Since you drop non-gki, there is no need for you
+# Goodbye!
 endmenu
