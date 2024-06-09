@@ -68,7 +68,7 @@ make -j $(nproc) O=out CC=clang
 
 ### [OPTIONAL] Step 5. Make AnyKernel3 package
 ```bash
-git clone https://github.com/Grill-Laux/AnyKernel3 anykernel -b upstream
+git clone https://github.com/uwu-gl/AnyKernel3 anykernel
 cp ~/android-kernel/out/arch/arm64/boot/Image.gz-dtb anykernel
 zip -r anykernel3-oos-11.zip * -x .git README.md *placeholder
  ```
