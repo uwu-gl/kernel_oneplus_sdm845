@@ -70,7 +70,7 @@ make -j $(nproc) O=out CC=clang
 
 ### [可选] 第五步： 制作anykernel3刷机包
 ```bash
-git clone https://github.com/Grill-Laux/AnyKernel3 anykernel -b upstream
+git clone https://github.com/uwu-gl/AnyKernel3 anykernel
 cp ~/android-kernel/out/arch/arm64/boot/Image.gz-dtb anykernel
 zip -r anykernel3-oos-11.zip * -x .git README.md *placeholder
  ```
