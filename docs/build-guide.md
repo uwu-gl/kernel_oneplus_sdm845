@@ -36,7 +36,7 @@ In this guide, we will use Ubuntu 20.04.
 ### Step 2. Sync up kernel source
 
 ```bash
-git clone https://github.com/Grill-Laux/kernel_oneplus_sdm845 ~/android-kernel --recursive --depth=1 -b oos/wip-upstream
+git clone https://github.com/uwu-gl/kernel_oneplus_sdm845 ~/android-kernel --recursive --depth=1 -b oos/wip-upstream
 ```
 **Tips: Please take place branch you want.**
 
