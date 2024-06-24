@@ -38,7 +38,7 @@
 ### 第二步： 同步内核源码
 
 ```bash
-git clone https://github.com/Grill-Laux/kernel_oneplus_sdm845 ~/android-kernel --recursive --depth=1 -b oos/wip-upstream
+git clone https://github.com/uwu-gl/kernel_oneplus_sdm845 ~/android-kernel --recursive --depth=1 -b oos/wip-upstream
 ```
 **警告： 请完全复制粘贴，如果要去掉某个参数，请谨慎操作，萌新别这么干，如果你这么干，还来问我 我会笑你的**
 
@@ -65,7 +65,7 @@ make O=out sdm845-perf_defconfig
 ```
 * 3. 编译内核
 ```bash
-make -j $(nproc) O=out CC=clang
+make -j$(nproc) O=out CC=clang
 ```
 
 ### [可选] 第五步： 制作anykernel3刷机包
