@@ -3,7 +3,7 @@ on:
   workflow_call:
   workflow_dispatch:
   push:
-    branches: ["oos/11.0-wip"]
+    branches: ["oos/11.0-wip-merge-remote"]
 jobs:
   build-oos:
     runs-on: ubuntu-20.04
@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: Grill-Laux/kernel_oneplus_sdm845
-          ref: oos/11.0-wip
+          ref: oos/11.0-wip-merge-remote
       
       - name: Compile Kernel
         run: |
