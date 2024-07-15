@@ -22,7 +22,7 @@ jobs:
       - name: Checkout kernel (OxygenOS 9.x.x)
         uses: actions/checkout@v3
         with:
-          repository: Grill-Laux/kernel_oneplus_sdm845
+          repository: uwu-gl/kernel_oneplus_sdm845
           ref: oos/9.0
 
       
@@ -37,7 +37,7 @@ jobs:
           export CROSS_COMPILE=aarch64-linux-gnu-
           export CROSS_COMPILE_ARM32=arm-linux-gnueabi-
           make O=out sdm845-perf_defconfig
-          make -j $(nproc) O=out CC=clang
+          make -j12 O=out CC=clang
           
       - name: Make AnyKernel3
         run: |
