@@ -43,7 +43,7 @@ jobs:
           
       - name: Make AnyKernel
         run: |
-          git clone https://github.com/Grill-Laux/AnyKernel3 anykernel
+          git clone https://github.com/uwu-gl/AnyKernel3 anykernel
           cp out/arch/arm64/boot/Image.gz-dtb anykernel/
     
       - name: Upload AnyKernel
