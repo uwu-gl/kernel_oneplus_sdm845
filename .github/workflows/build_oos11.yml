@@ -22,7 +22,7 @@ jobs:
       - name: Checkout kernel (OxygenOS)
         uses: actions/checkout@v3
         with:
-          repository: Grill-Laux/kernel_oneplus_sdm845
+          repository: uwu-gl/kernel_oneplus_sdm845
           ref: oos/11.0
       
       - name: Compile Kernel
@@ -40,7 +40,7 @@ jobs:
           
       - name: Make AnyKernel3
         run: |
-          git clone https://github.com/Grill-Laux/AnyKernel3 anykernel
+          git clone https://github.com/uwu-gl/AnyKernel3 anykernel
           cp out/arch/arm64/boot/Image.gz-dtb anykernel
 
       - name: Upload AnyKernel3

@@ -11,7 +11,7 @@ jobs:
       - name: Checkout Kernel
         uses: actions/checkout@v3
         with:
-          repository: Grill-Laux/kernel_oneplus_sdm845
+          repository: uwu-gl/kernel_oneplus_sdm845
           ref: oos/wip-upstream
       
       - name: Update KernelSU
