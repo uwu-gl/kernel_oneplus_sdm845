@@ -8,3 +8,8 @@ obj-$(CONFIG_ION) +=	ion.o ion-ioctl.o ion_heap.o \
 ifdef CONFIG_COMPAT
 obj-$(CONFIG_ION_LEGACY) += compat_ion.o
 endif
+obj-$(CONFIG_OPLUS_ION_BOOSTPOOL) += oplus_ion_boost_pool.o
+
+#ifdef OPLUS_FEATURE_HEALTHINFO
+obj-y	+= ion/
+#endif /* OPLUS_FEATURE_HEALTHINFO */

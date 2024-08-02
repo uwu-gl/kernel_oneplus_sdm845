@@ -115,7 +115,6 @@ enum pon_restart_reason {
 #define ANDROID_MODE	0x7766550c
 #define MODEM_MODE		0x7766550b
 #define OEM_PANIC		0x77665518
-
 #ifdef CONFIG_INPUT_QPNP_POWER_ON
 int qpnp_pon_system_pwr_off(enum pon_power_off_type type);
 int qpnp_pon_is_warm_reset(void);

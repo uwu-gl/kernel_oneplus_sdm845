@@ -16,6 +16,11 @@
 #include <linux/xattr.h>
 #include <linux/posix_acl.h>
 
+#ifdef CONFIG_OPLUS_FEATURE_ACM
+#include <linux/acm_fs.h>
+#define ACM_DELETE_ERR  999
+#endif
+
 static bool fuse_use_readdirplus(struct inode *dir, struct dir_context *ctx)
 {
 	struct fuse_conn *fc = get_fuse_conn(dir);
@@ -329,7 +334,6 @@ const struct dentry_operations fuse_dentry_operations = {
 const struct dentry_operations fuse_root_dentry_operations = {
 	.d_init		= fuse_dentry_init,
 	.d_release	= fuse_dentry_release,
-	.d_canonical_path = fuse_dentry_canonical_path,
 };
 
 int fuse_valid_type(int m)
@@ -529,6 +533,9 @@ static int fuse_create_open(struct inode *dir, struct dentry *entry,
 		file->private_data = ff;
 		fuse_finish_open(inode, file);
 	}
+#ifdef CONFIG_OPLUS_FEATURE_ACM
+	monitor_acm2(entry, NULL, args.in.h.opcode);
+#endif
 	return err;
 
 out_free_ff:
@@ -642,6 +649,11 @@ static int create_new_entry(struct fuse_conn *fc, struct fuse_args *args,
 		fuse_change_entry_timeout(entry, &outarg);
 	}
 	fuse_invalidate_attr(dir);
+#ifdef CONFIG_OPLUS_FEATURE_ACM
+	if ((args->in.h.opcode == FUSE_MKNOD) ||
+		(args->in.h.opcode == FUSE_MKDIR))
+		monitor_acm2(entry, NULL, args->in.h.opcode);
+#endif
 	return 0;
 
  out_put_forget_req:
@@ -745,6 +757,13 @@ static int fuse_unlink(struct inode *dir, struct dentry *entry)
 	args.in.numargs = 1;
 	args.in.args[0].size = entry->d_name.len + 1;
 	args.in.args[0].value = entry->d_name.name;
+#ifdef CONFIG_OPLUS_FEATURE_ACM
+	err = monitor_acm2(entry, NULL, args.in.h.opcode);
+	if (err) {
+		err = ACM_DELETE_ERR;
+		return err;
+	}
+#endif
 	err = fuse_simple_request(fc, &args);
 	if (!err) {
 		struct inode *inode = d_inode(entry);
@@ -784,6 +803,13 @@ static int fuse_rmdir(struct inode *dir, struct dentry *entry)
 	args.in.numargs = 1;
 	args.in.args[0].size = entry->d_name.len + 1;
 	args.in.args[0].value = entry->d_name.name;
+#ifdef CONFIG_OPLUS_FEATURE_ACM
+	err = monitor_acm2(entry, NULL, args.in.h.opcode);
+	if (err) {
+		err = ACM_DELETE_ERR;
+		return err;
+	}
+#endif
 	err = fuse_simple_request(fc, &args);
 	if (!err) {
 		clear_nlink(d_inode(entry));
@@ -846,6 +872,9 @@ static int fuse_rename_common(struct inode *olddir, struct dentry *oldent,
 		if (d_really_is_positive(newent))
 			fuse_invalidate_entry(newent);
 	}
+#ifdef CONFIG_OPLUS_FEATURE_ACM
+	monitor_acm2(oldent, newent, args.in.h.opcode);
+#endif
 
 	return err;
 }

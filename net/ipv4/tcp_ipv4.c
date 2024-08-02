@@ -87,6 +87,14 @@
 
 #include <trace/events/tcp.h>
 
+//#ifdef OPLUS_FEATURE_NWPOWER
+#include <net/oplus_nwpower.h>
+//#endif /* OPLUS_FEATURE_NWPOWER */
+
+#ifdef OPLUS_FEATURE_WIFI_ROUTERBOOST
+#include "net/oplus/oplus_router_boost.h"
+#endif /* OPLUS_FEATURE_WIFI_ROUTERBOOST */
+
 #ifdef CONFIG_TCP_MD5SIG
 static int tcp_v4_md5_hash_hdr(char *md5_hash, const struct tcp_md5sig_key *key,
 			       __be32 daddr, __be32 saddr, const struct tcphdr *th);
@@ -157,6 +165,12 @@ int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
 	if (tcptw->tw_ts_recent_stamp &&
 	    (!twp || (reuse && time_after32(ktime_get_seconds(),
 					    tcptw->tw_ts_recent_stamp)))) {
+		/* inet_twsk_hashdance() sets sk_refcnt after putting twsk
+		 * and releasing the bucket lock.
+		 */
+		if (unlikely(!refcount_inc_not_zero(&sktw->sk_refcnt)))
+			return 0;
+
 		/* In case of repair and re-using TIME-WAIT sockets we still
 		 * want to be sure that it is safe as above but honor the
 		 * sequence numbers and time stamps set as part of the repair
@@ -177,7 +191,7 @@ int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
 			tp->rx_opt.ts_recent	   = tcptw->tw_ts_recent;
 			tp->rx_opt.ts_recent_stamp = tcptw->tw_ts_recent_stamp;
 		}
-		sock_hold(sktw);
+
 		return 1;
 	}
 
@@ -1721,6 +1735,10 @@ int tcp_v4_rcv(struct sk_buff *skb)
 	struct sock *sk;
 	int ret;
 
+	//#ifdef OPLUS_FEATURE_NWPOWER
+	oplus_match_ipa_ip_wakeup(OPLUS_TCP_TYPE_V4, skb);
+	//#endif /* OPLUS_FEATURE_NWPOWER */
+
 	if (skb->pkt_type != PACKET_HOST)
 		goto discard_it;
 
@@ -1752,6 +1770,17 @@ lookup:
 			       th->dest, sdif, &refcounted);
 	if (!sk)
 		goto no_tcp_socket;
+
+	//#ifdef OPLUS_FEATURE_NWPOWER
+	oplus_match_ipa_tcp_wakeup(OPLUS_TCP_TYPE_V4, sk);
+	//#endif /* OPLUS_FEATURE_NWPOWER */
+
+	#ifdef OPLUS_FEATURE_WIFI_ROUTERBOOST
+	if (oplus_router_boost_handler != NULL &&
+		oplus_router_boost_handler(sk, skb) < 0) {
+		goto discard_it;
+	}
+	#endif /* OPLUS_FEATURE_WIFI_ROUTERBOOST */
 
 process:
 	if (sk->sk_state == TCP_TIME_WAIT)
@@ -1873,6 +1902,9 @@ bad_packet:
 	}
 
 discard_it:
+	//#ifdef OPLUS_FEATURE_NWPOWER
+	oplus_ipa_schedule_work();
+	//#endif /* OPLUS_FEATURE_NWPOWER */
 	/* Discard frame. */
 	kfree_skb(skb);
 	return 0;
@@ -2589,6 +2621,11 @@ static int __net_init tcp_sk_init(struct net *net)
 	net->ipv4.sysctl_tcp_sack = 1;
 	net->ipv4.sysctl_tcp_window_scaling = 1;
 	net->ipv4.sysctl_tcp_timestamps = 1;
+
+	#ifdef OPLUS_BUG_STABILITY
+	net->ipv4.sysctl_tcp_random_timestamp = 1;
+	#endif /* OPLUS_BUG_STABILITY */
+
 	net->ipv4.sysctl_tcp_early_retrans = 3;
 	net->ipv4.sysctl_tcp_recovery = TCP_RACK_LOSS_DETECTION;
 	net->ipv4.sysctl_tcp_slow_start_after_idle = 1; /* By default, RFC2861 behavior.  */
