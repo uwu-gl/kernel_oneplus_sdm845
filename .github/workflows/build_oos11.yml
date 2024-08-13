@@ -24,6 +24,7 @@ jobs:
         with:
           repository: uwu-gl/kernel_oneplus_sdm845
           ref: oos/11.0
+          submodules: recursive
       
       - name: Compile Kernel
         run: |
