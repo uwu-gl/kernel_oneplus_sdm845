@@ -944,17 +944,6 @@ static struct clk_branch disp_cc_mdss_vsync_clk = {
 	},
 };
 
-static struct gdsc mdss_gdsc = {
-	.gdscr = 0x3000,
-	.en_few_wait_val = 0x6,
-	.en_rest_wait_val = 0x5,
-	.pd = {
-		.name = "mdss_gdsc",
-	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.flags = HW_CTRL | POLL_CFG_GDSCR,
-};
-
 static struct clk_regmap *disp_cc_sdm845_clocks[] = {
 	[DISP_CC_MDSS_AHB_CLK] = &disp_cc_mdss_ahb_clk.clkr,
 	[DISP_CC_MDSS_AXI_CLK] = &disp_cc_mdss_axi_clk.clkr,
