@@ -87,6 +87,9 @@ static FORCE_INLINE int __LZ4_decompress_generic(
 	const BYTE * const iend = src + srcSize;
 
 	BYTE * const oend = dst + outputSize;
+	const BYTE *ip = (const BYTE *) src;
+
+	BYTE *op = (BYTE *) dst;
 	BYTE *cpy;
 
 	const BYTE * const dictEnd = (const BYTE *)dictStart + dictSize;

@@ -77,5 +77,7 @@ KBUILD_CFLAGS += $(call cc-disable-warning, cast-function-type-strict)
 KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-int-cast)
 KBUILD_CFLAGS += $(call cc-disable-warning, void-pointer-to-int-cast)
 KBUILD_CFLAGS += $(call cc-disable-warning, address-of-packed-member)
+KBUILD_CFLAGS += -Wno-enum-compare-conditional
+KBUILD_CFLAGS += -Wno-enum-enum-conversion
 endif
 endif
