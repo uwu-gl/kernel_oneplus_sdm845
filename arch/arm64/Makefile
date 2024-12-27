@@ -149,7 +149,7 @@ endif
 KBUILD_DTBS	:= dtbs
 
 ifeq ($(CONFIG_BUILD_ARM64_DT_OVERLAY),y)
-export DTC_FLAGS := -@
+export DTC_FLAGS := -@ -f
 endif
 
 all:	$(KBUILD_DTBS) $(KBUILD_TARGET)
