@@ -214,7 +214,7 @@ static inline u32 task_sid(const struct task_struct *task)
 /*
  * get the subjective security ID of the current task
  */
-static inline u32 current_sid(void)
+u32 current_sid(void)
 {
 	const struct task_security_struct *tsec = current_security();
 
@@ -2331,6 +2331,7 @@ static int check_nnp_nosuid(const struct linux_binprm *bprm,
 	if (new_tsec->sid == old_tsec->sid)
 		return 0; /* No change in credentials */
 
+<<<<<<< HEAD
 	if (!ksu_sid)
 		security_secctx_to_secid("u:r:su:s0", strlen("u:r:su:s0"), &ksu_sid);
 
