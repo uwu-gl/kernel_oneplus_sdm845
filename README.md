@@ -1,6 +1,8 @@
+# !!! This repository will move to https://github.com/OnePlus6T-Development/kernel_oneplus_sdm845
+
 # OnePlus 6/6T Kernel
 This page include official kernel source, PixelOS/PixelExperience kernel source, LineageOS kernel source.
-    
+
 If your phone model is A6013, LineageOS kernel will CANNOT use WLAN ,you should disable WLAN and bluetooth, then reboot, after these they will work properly.
 
 ### Branches
